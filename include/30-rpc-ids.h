@@ -1,6 +1,6 @@
 #ifndef __RPC_IDS__
 #define __RPC_IDS__
-static const enum RPC_ids { 
+enum RPC_ids { 
  CFG_Debug
 ,CFG_Leds_Disable
 ,CFG_Leds_Enable

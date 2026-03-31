@@ -10,7 +10,7 @@ idsh=include/30-rpc-ids.h
 cat > $idsh << EOT
 #ifndef __RPC_IDS__
 #define __RPC_IDS__
-static const enum RPC_ids { 
+enum RPC_ids { 
 EOT
 cat > $cmdh << EOT
 #ifndef __RPC_CMD__
