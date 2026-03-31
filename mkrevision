@@ -42,7 +42,7 @@ for fn in src/*.c*; do
 	echo "// ****************************"
 	echo "// $fn" 
 	echo "// ****************************"
-	grep '[a-z0-9A-Z_]\+ [a-z0-9A-Z_*]\+ *([a-z0-9A-Z,*& _.]*) *{' "$fn" | sed  -e 's/ {.*$/;/g' \
+	grep '[a-z0-9A-Z_]\+ [a-z0-9A-Z_*]\+ *([a-z0-9A-Z,*& _.]*) *{' "$fn" | sed  -e 's/ {.*$/;/g' 
 done >> $protoh
 
 echo "#endif" >> $protoh
