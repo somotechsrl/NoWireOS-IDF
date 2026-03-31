@@ -17,8 +17,22 @@
 
 #define BUFSIZE 2048
 
-void mqtt_init();
-void wifi_init();
-void modbus_init();
 
 extern char mac_str[];
+
+// Modbus configuration entry
+typedef struct {
+  char tag[32];
+  char ad[32];
+  uint16_t rs;
+  uint8_t fn, rn;
+} cfg_call;
+
+// Modbus Configuration block
+struct {
+  uint8_t ncalls;
+  // max MODBUS_CONFIG  calls... -- see HAL.h
+  cfg_call calls[MODBUS_CONFIGS];
+} cfg;
+
+extern cfg cfg;
