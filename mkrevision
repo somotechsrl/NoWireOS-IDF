@@ -9,7 +9,7 @@ cmdh=include/30-rpc-cmd.h
 idsh=include/30-rpc-ids.h
 echo "enum RPC_ids {" > $idsh
 echo "char *RPC_cmd[] = {" > $cmdh
-sort ZZZ_RPCList.txt | while read rpc_cmd; do
+sort ZZZ_RPC_List.txt | while read rpc_cmd; do
 	rpc_cmd=$(sed 's/ //g' <<< $rpc_cmd)
 	[ -z "$rpc_cmd" ] && continue;
 	echo $rpc_cmd 1>&2
