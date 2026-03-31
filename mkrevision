@@ -27,7 +27,6 @@ git commit -m "$rdescr" -a
 git push
 
 cat > include/revision.h << EOT
-#define REVISION \"$(git describe --tags | tail -n 1)\"" 
 #define REV_DATE \"$(git log -1 --format=%cd | tail -n 1)\"" 
 EOT
 
@@ -37,15 +36,13 @@ echo "#ifndef __PROTO__" > $protoh
 echo "#define __PROTO__" >> $protoh
 echo "//Extracted Prototyes" >> $protoh
 for fn in src/*c*; do
-	grep -q static <<< $fn && continue
+	#grep -q static <<< $fn && continue
 	echo "extracting prototypes from  $fn..."
 	echo "// ****************************"
 	echo "// $fn" 
 	echo "// ****************************"
 	grep '[a-z0-9A-Z_]\+ [a-z0-9A-Z_*]\+ *([a-z0-9A-Z,*& _.]*) *{' "$fn" | sed  -e 's/ {.*$/;/g' \
-	done >> $protoh
-
-
+done >> $protoh
 
 echo "#endif" >> $protoh
 
