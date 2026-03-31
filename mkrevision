@@ -5,8 +5,8 @@ rdescr="$*";
 [ -z "$rdescr" ] && rdescr="$(date)"
 
 comma=" "
-cmdh=include/03-rpc-cmd.h
-idsh=include/03-rpc-ids.h
+cmdh=include/30-rpc-cmd.h
+idsh=include/30-rpc-ids.h
 echo "enum RPC_ids {" > $idsh
 echo "char *RPC_cmd[] = {" > $cmdh
 sort ZZZ_RPCList.txt | while read rpc_cmd; do
