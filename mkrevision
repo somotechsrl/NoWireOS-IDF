@@ -10,12 +10,12 @@ idsh=include/30-rpc-ids.h
 cat > $idsh << EOT
 #ifndef __RPC_IDS__
 #define __RPC_IDS__
-static enum RPC_ids { 
+static enum RPC_ids = { 
 EOT
 cat > $cmdh << EOT
 #ifndef __RPC_CMD__
 #define __RPC_CMD__
-static char *RPC_cmd {
+static char *RPC_cmd = {
 EOT
 sort ZZZ_RPC_List.txt | while read rpc_cmd; do
 	rpc_cmd=$(sed 's/ //g' <<< $rpc_cmd)
