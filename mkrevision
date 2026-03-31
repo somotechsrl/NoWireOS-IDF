@@ -30,9 +30,9 @@ for fn in src/*.c*; do
 	echo "#ifndef $ft" >> $fh
 	echo "#define $ft" >> $fh
 	echo "//Extracted Prototyes" >> $fh
-	echo "// ****************************"
-	echo "// $fn prototypes" 
-	echo "// ****************************"
+	echo "// ****************************" >> $fh 
+	echo "// $fn prototypes" >> $fh
+	echo "// ****************************" >> $fh
 	grep '[a-z0-9A-Z_]\+ [a-z0-9A-Z_*]\+ *([a-z0-9A-Z,*& _.]*) *{' "$fn" \
 		| grep -v static \
 		| sed  -e 's/ {.*$/;/g' \

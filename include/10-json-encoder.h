@@ -1,6 +1,9 @@
 #ifndef __PROTO_10_JSON_ENCODER_CC__
 #define __PROTO_10_JSON_ENCODER_CC__
 //Extracted Prototyes
+// ****************************
+// src/10-json-encoder.cc prototypes
+// ****************************
 void jsonClear();
 void jsonInit();
 const char *jsonGetBuffer();
