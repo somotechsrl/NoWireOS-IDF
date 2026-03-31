@@ -26,7 +26,7 @@ git commit -m "$rdescr" -a
 git push
 
 git pull
-cat > include/revision.h
+cat > include/revision.h << EOT
 #define REVISION \"$(git describe --tags | tail -n 1)\"" 
 #define REV_DATE \"$(git log -1 --format=%cd | tail -n 1)\"" 
 dat=(git log -1 --format=%cd)
