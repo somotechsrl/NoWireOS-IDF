@@ -12,6 +12,7 @@ echo "char *RPC_cmd[] = {" > $cmdh
 sort ZZZ_RPCList.txt | while read rpc_cmd; do
 	rpc_cmd=$(sed 's/ //g' <<< $rpc_cmd)
 	[ -z "$rpc_cmd" ] && continue;
+	echo $rpc_cmd 1>&2
 	rpc_id=$(sed -e 's/[.]/_/g' -e 's/[|]//g' <<< $rpc_cmd)
 	echo -e "${comma}$rpc_id" >> $idsh
 	echo -e "${comma}\"$rpc_cmd\"" >> $cmdh
