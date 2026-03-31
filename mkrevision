@@ -40,7 +40,7 @@ echo "#ifdef __PROTO__" > $protoh
 echo "#define __PROTO__" > $protoh
 echo "//Extracted Prototyes" >> $protoh
 for fn in src/*c*; do
-	grep -q static && continue
+	grep -q static <<< $fn && continue
 	echo "extracting prototypes from  $fn..."
 	echo "// ****************************" >> $protoh
 	echo "// $fn" >> Revision.h
