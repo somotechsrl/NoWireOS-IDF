@@ -27,7 +27,7 @@ sort ZZZ_RPC_List.txt | while read rpc_cmd; do
 	comma=","
 done 
 tee -a $cmdh >> $idsh << EOT
-);
+};
 #endif
 EOT
 

@@ -13,5 +13,5 @@ static enum RPC_ids {"
 ,Sys_GetStatus
 ,Sys_Identify
 ,Sys_Reboot
-);
+};
 #endif

@@ -13,5 +13,5 @@ static char *RPC_cmd {"
 ,"Sys.GetStatus"
 ,"Sys.Identify"
 ,"Sys.Reboot"
-);
+};
 #endif
