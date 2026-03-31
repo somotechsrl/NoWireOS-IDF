@@ -1,9 +1,11 @@
 #define __PROTO__
 //Extracted Prototyes
 // ****************************
+// src/00-main.c
 // ****************************
 void app_main();
 // ****************************
+// src/10-core-mbtp.c
 // ****************************
 static bool modbus_receive_all(int sock, uint8_t *buffer, size_t length);
 int modbus_tcp_connect(const char *host, uint16_t port);
@@ -16,13 +18,16 @@ uint16_t *modbus_read_input_registers(int sock, uint16_t start_address, uint16_t
 static void modbus_client_task(void *pvParameters);
 void modbus_init(void);
 // ****************************
+// src/10-core-mqtt.c
 // ****************************
 // ****************************
+// src/10-core-wifi.c
 // ****************************
 static esp_err_t config_handler(httpd_req_t *req);
 void wifi_init();
 void start_web_server();
 // ****************************
+// src/10-json-encoder.cc
 // ****************************
 void jsonClear();
 void jsonInit();

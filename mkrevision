@@ -36,19 +36,17 @@ dat=(git log -1 --format=%cd)
 
 # Generates prototypes
 protoh=include/00-prototypes.h
-echo "#ifdef __PROTO__" > $protoh
-echo "#define __PROTO__" > $protoh
+echo "#ifndef __PROTO__" > $protoh
+echo "#define __PROTO__" >> $protoh
 echo "//Extracted Prototyes" >> $protoh
 for fn in src/*c*; do
 	grep -q static <<< $fn && continue
 	echo "extracting prototypes from  $fn..."
-	echo "// ****************************" >> $protoh
-	echo "// $fn" >> $protoh
-	echo "// ****************************" >> $protoh
-	grep '[a-z0-9A-Z_]\+ [a-z0-9A-Z_*]\+ *([a-z0-9A-Z,*& _.]*) *{' $fn \
-		| sed  -e 's/ {.*$/;/g' \
-		>> $protoh
-	done
+	echo "// ****************************"
+	echo "// $fn" 
+	echo "// ****************************"
+	grep '[a-z0-9A-Z_]\+ [a-z0-9A-Z_*]\+ *([a-z0-9A-Z,*& _.]*) *{' "$fn" | sed  -e 's/ {.*$/;/g' \
+	done >> $protoh
 
 
 
