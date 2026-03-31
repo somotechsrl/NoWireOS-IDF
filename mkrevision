@@ -21,6 +21,27 @@ done
 echo -e "};" >> $idsh
 echo -e "};" >> $cmdh
 
+# Generates prototypes
+for fn in src/*.c*; do
+	fh=$(sed -E -e 's/[.].*/.h/g' -e 's/.*\//include\//g' <<< $fn)
+	ft="__PROTO_$(tr '[:lower:]' '[:upper]' <<< $fn | sed -E -e 's/[.-]/_/g')__"
+	echo "extracting prototypes from  $fn to $fh ..." 1>&2
+	continue
+	echo -n > $ft
+	echo "#ifndef $ft" >> $fh
+	echo "#define $ft" >> $fh
+	echo "//Extracted Prototyes" >> $fh
+	echo "// ****************************"
+	echo "// $fn prototypes" 
+	echo "// ****************************"
+	grep '[a-z0-9A-Z_]\+ [a-z0-9A-Z_*]\+ *([a-z0-9A-Z,*& _.]*) *{' "$fn" \
+		| grep -v static \
+		| sed  -e 's/ {.*$/;/g' \
+		>> $fh
+	echo "#endif" >> $fh
+done 
+
+
 # updates to last revision
 git add . -A
 git commit -m "$rdescr" -a
@@ -29,27 +50,4 @@ git push
 cat > include/revision.h << EOT
 #define REV_DATE \"$(git log -1 --format=%cd | tail -n 1)\"" 
 EOT
-
-# Generates prototypes
-protoh=include/00-prototypes.h
-echo "#ifndef __PROTO__" > $protoh
-echo "#define __PROTO__" >> $protoh
-echo "//Extracted Prototyes" >> $protoh
-for fn in src/*.c*; do
-	echo $fn 1>&2
-	echo "extracting prototypes from  $fn..."
-	echo "// ****************************"
-	echo "// $fn" 
-	echo "// ****************************"
-	grep '[a-z0-9A-Z_]\+ [a-z0-9A-Z_*]\+ *([a-z0-9A-Z,*& _.]*) *{' "$fn" \
-		| grep -v static \
-		| sed  -e 's/ {.*$/;/g' 
-done >> $protoh
-
-echo "#endif" >> $protoh
-
-# updates to last revision
-git add . -A
-git commit -m "$rdescr" -a
-git push
 
