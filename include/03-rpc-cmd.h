@@ -1,0 +1,2 @@
+char *RPC_cmd[] = {
+};

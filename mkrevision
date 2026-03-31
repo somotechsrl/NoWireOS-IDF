@@ -1,0 +1,141 @@
+#!/bin/bash
+
+# revdescr
+rdescr="$*";
+[ -z "$rdescr" ] && rdescr="$(date)"
+
+comma=" "
+cmdh=include/03-rpc-cmd.h
+idsh=include/03-rpc-ids.h
+echo "enum RPC_ids {" > $idsh
+echo "char *RPC_cmd[] = {" > $cmdh
+sort ZZZ_RPCList.txt | while read rpc_cmd; do
+	rpc_cmd=$(sed 's/ //g' <<< $rpc_cmd)
+	[ -z "$rpc_cmd" ] && continue;
+	rpc_id=$(sed -e 's/[.]/_/g' -e 's/[|]//g' <<< $rpc_cmd)
+	echo -e "${comma}$rpc_id" >> $idsh
+	echo -e "${comma}\"$rpc_cmd\"" >> $cmdh
+	comma=","
+done 
+echo -e "};" >> $idsh
+echo -e "};" >> $cmdh
+
+# updates to last revision
+git add . -A
+git commit -m "$rdescr" -a
+git push
+
+git pull
+cat > include/revision.h
+#define REVISION \"$(git describe --tags | tail -n 1)\"" 
+#define REV_DATE \"$(git log -1 --format=%cd | tail -n 1)\"" 
+dat=(git log -1 --format=%cd)
+EOT
+
+exit
+
+# Generate command list
+cmd_enum="NULL_COMMAND";
+cmd_text="\"\"";
+cmd_params="\"\"";
+while IFS="=" read command params; do
+	[ -z "$command" ] && continue
+	cmd_enum="$cmd_enum,$(sed 's/ /_/g' <<< $command)"
+	cmd_text="$cmd_text,\"$command\""	
+	cmd_params="$cmd_params,\"$params\""	
+	done < 00_comm.list
+cmd_enum="$cmd_enum,UNKNOWN_COMMAND=1000"
+cmd_text="$cmd_text,NULL"
+cmd_params="$cmd_params,NULL"
+
+# Extracts Opentherm Messages for map String<->id
+oth_enum="NULL_COMMAND";
+oth_text="\"\"";
+grep 'case OpenThermMessageID' *OpenTherm*.ino > 00_opentherm.list
+while IFS=":" read pfx none1 otid none2; do
+	[ -z "$otid" ] && continue
+	oth_enum="$oth_enum,OpenThermMessageID::$otid"
+	oth_text="$oth_text,\"$otid\""	
+	done < 00_opentherm.list
+oth_enum="$oth_enum,UNKNOWN_OT=0xffff"
+oth_text="$oth_text,NULL"
+
+# Modbus map generator - dismissed - load map from cloud
+#map_enum="NULL_MAP";
+#map_text="\"\"";
+#map_type="0";
+#map_func="0";
+#map_block="0";
+#map_params="\"\"";
+#while read mtype mapname mapblock mapfunc mapdata; do
+#	[ -z "$mapdata" ] && continue
+#	map_enum="$map_enum,$(sed 's/[^a-zA-Z]/_/g' <<< $mapname)_$mapfunc"
+#	map_text="$map_text,\"$mapname\""	
+#	map_type="$map_type,$mtype"	
+#	map_func="$map_func,$mapfunc"	
+#	map_block="$map_block,$mapblock"	
+#	map_params="$map_params,\"$(sed 's/,/ /g' <<< $mapdata)\""	
+#	done < 00_maps.list
+
+# terminates string array...
+#map_enum="$map_enum,UNKNOWN_MAP=1000"
+#map_text="$map_text,NULL"
+#map_type="$map_type,0"
+#map_func="$map_func,0"
+#map_block="$map_block,0"
+#map_params="$map_params,NULL"
+
+release=$(svn info | grep Revision: | sed 's/.*: *//g')
+echo $release > Release.txt
+
+cat > Revision.h << EOT
+#ifndef REVISION_H
+#define REVISION_H
+
+#define VERSION "2.0"
+#define REVTIME String(__DATE__) + " " + String(__TIME__)
+#define REVNUMB "$release"
+
+// MAP types
+#define MODBUS_TYPE 1
+#define OPENTHERM_TYPE 2
+
+// Firmware file
+String firmware=String("Datalogger-ESP8266.")+ARDUINO_BOARD+"."+REVNUMB;
+
+// declares commands
+enum cmd_enum { $cmd_enum };
+const char *cmd_text[] = { $cmd_text };
+const char *cmd_params[] = { $cmd_params };
+
+// declares OT tokens
+// enum oth_enum { $oth_enum };
+// const char *oth_text[] = { $oth_text };
+
+// declares maps
+enum map_enum { $map_enum_modbus };
+const int map_func[] = { $map_func };
+const int map_type[] = { $map_type };
+const int map_block[] = { $map_block };
+const char *map_text[] = { $map_text };
+const char *map_params[] = { $map_params };
+EOT
+
+# Generates prototypes
+echo -e "\n\n//Extracted Prototyes" >> Revision.h
+for fn in *.ino; do
+	echo "extracting prototypes from  $fn..."
+	echo "// ****************************" >> Revision.h
+	echo "// $fn" >> Revision.h
+	echo "// ****************************" >> Revision.h
+	grep '[a-z0-9A-Z_]\+ [a-z0-9A-Z_*]\+ *([a-z0-9A-Z,*& _.]*) *{' $fn \
+		| sed  -e 's/ {.*$/;/g' \
+		>> Revision.h
+	done
+
+
+
+echo "#endif" >> Revision.h
+
+echo "Generated Revision.h"
+
