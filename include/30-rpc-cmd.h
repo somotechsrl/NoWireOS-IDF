@@ -1,6 +1,6 @@
 #ifndef __RPC_CMD__
 #define __RPC_CMD__
-static char *RPC_cmd = {
+static const char *RPC_cmd[] = {
  "CFG.Debug|"
 ,"CFG.Leds.Disable"
 ,"CFG.Leds.Enable"
