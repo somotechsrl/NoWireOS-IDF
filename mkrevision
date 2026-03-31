@@ -36,13 +36,14 @@ echo "#ifndef __PROTO__" > $protoh
 echo "#define __PROTO__" >> $protoh
 echo "//Extracted Prototyes" >> $protoh
 for fn in src/*.c*; do
-	grep static <<< $fn 1>&2 && continue
 	echo $fn 1>&2
 	echo "extracting prototypes from  $fn..."
 	echo "// ****************************"
 	echo "// $fn" 
 	echo "// ****************************"
-	grep '[a-z0-9A-Z_]\+ [a-z0-9A-Z_*]\+ *([a-z0-9A-Z,*& _.]*) *{' "$fn" | sed  -e 's/ {.*$/;/g' 
+	grep '[a-z0-9A-Z_]\+ [a-z0-9A-Z_*]\+ *([a-z0-9A-Z,*& _.]*) *{' "$fn" \
+		| grep -v static \
+		| sed  -e 's/ {.*$/;/g' 
 done >> $protoh
 
 echo "#endif" >> $protoh
