@@ -35,8 +35,9 @@ protoh=include/00-prototypes.h
 echo "#ifndef __PROTO__" > $protoh
 echo "#define __PROTO__" >> $protoh
 echo "//Extracted Prototyes" >> $protoh
-for fn in src/*c*; do
+for fn in src/*.c*; do
 	#grep -q static <<< $fn && continue
+	echo $fn 1>&2
 	echo "extracting prototypes from  $fn..."
 	echo "// ****************************"
 	echo "// $fn" 
@@ -50,5 +51,4 @@ echo "#endif" >> $protoh
 git add . -A
 git commit -m "$rdescr" -a
 git push
-
 
