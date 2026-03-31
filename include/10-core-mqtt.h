@@ -4,4 +4,5 @@
 // ****************************
 // src/10-core-mqtt.c prototypes
 // ****************************
+void mqtt_init(void);
 #endif

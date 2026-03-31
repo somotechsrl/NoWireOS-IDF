@@ -36,8 +36,7 @@ static void mqtt_event_handler(void *handler_args, esp_event_base_t base, int32_
     }
 }
 
-void mqtt_init(void)
-{
+void mqtt_init(void) {
     const esp_mqtt_client_config_t mqtt_cfg = {
         .broker.address.uri = "mqtt://rpc.somotech.it:2983",
         .broker.verification.certificate = NULL,
