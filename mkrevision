@@ -25,7 +25,8 @@ echo -e "};" >> $cmdh
 for fn in src/*.c*; do
 	fh=$(sed -E -e 's/[.].*/.h/g' -e 's/.*\//include\//g' <<< $fn)
 	ft="__PROTO_$(tr '[:lower:]' '[:upper]' <<< $fn | sed -E -e 's/[.-]/_/g')__"
-	echo "extracting prototypes from  $fn to $fh ..." 1>&2
+	echo "extracting prototypes from  $fn to $fh: $ft ..." 1>&2
+	continue
 	echo -n > $ft
 	echo "#ifndef $ft" >> $fh
 	echo "#define $ft" >> $fh
