@@ -1,11 +1,12 @@
 #include "main.h"
 #include "30-rpc-cmd.h"
 #include "30-rpc-ids.h"
+#include "10-json-encoder.h"
 
 /*******************************************************************************
    RPC Parser/Executor module
 */
-
+/*
 #define DEBUG_RPC "RPC"
 
 bool trigger = false;
@@ -154,3 +155,4 @@ void rpcManage(const char *payload, bool sync) {
   String d = String(payload);
   return rpcManage(d, sync);
 }
+*/
