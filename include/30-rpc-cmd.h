@@ -1,4 +1,6 @@
-char *RPC_cmd[] = {
+#ifndef __RPC_CMD__
+#define __RPC_CMD__
+static enum RPC_ids {" 
  "CFG.Debug|"
 ,"CFG.Leds.Disable"
 ,"CFG.Leds.Enable"
@@ -11,4 +13,5 @@ char *RPC_cmd[] = {
 ,"Sys.GetStatus"
 ,"Sys.Identify"
 ,"Sys.Reboot"
-};
+);
+#endif

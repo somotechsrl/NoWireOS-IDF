@@ -7,8 +7,16 @@ rdescr="$*";
 comma=" "
 cmdh=include/30-rpc-cmd.h
 idsh=include/30-rpc-ids.h
-echo "enum RPC_ids {" > $idsh
-echo "char *RPC_cmd[] = {" > $cmdh
+cat > $idsh << EOT
+#ifndef __RPC_IDS__
+#define __RPC_IDS__
+static enum RPC_ids {" 
+EOT
+cat > $cmdh << EOT
+#ifndef __RPC_CMD__
+#define __RPC_CMD__
+static enum RPC_ids {" 
+EOT
 sort ZZZ_RPC_List.txt | while read rpc_cmd; do
 	rpc_cmd=$(sed 's/ //g' <<< $rpc_cmd)
 	[ -z "$rpc_cmd" ] && continue;
@@ -18,8 +26,10 @@ sort ZZZ_RPC_List.txt | while read rpc_cmd; do
 	echo -e "${comma}\"$rpc_cmd\"" >> $cmdh
 	comma=","
 done 
-echo -e "};" >> $idsh
-echo -e "};" >> $cmdh
+tee -a $cmdh > $idsh << EOT
+);
+#endif
+EOT
 
 # Generates prototypes
 for fn in src/*.c*; do
