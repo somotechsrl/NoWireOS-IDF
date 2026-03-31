@@ -1,4 +1,7 @@
 #include "main.h"
+#include "10-core-wifi.h"
+#include "10-core-mbtp.h"
+#include "10-core-mqtt.h"
 
 // mac address array and string
 uint8_t mac[6];

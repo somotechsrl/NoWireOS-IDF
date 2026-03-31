@@ -16,7 +16,7 @@
 //#include "00-prototypes.h"
 
 #define BUFSIZE 2048
-
+#define MODBUS_CONFIGS 50
 
 extern char mac_str[];
 
@@ -33,6 +33,6 @@ struct {
   uint8_t ncalls;
   // max MODBUS_CONFIG  calls... -- see HAL.h
   cfg_call calls[MODBUS_CONFIGS];
-} cfg;
+} modbus_cfg;
 
-extern cfg cfg;
+//extern cfg cfg;
