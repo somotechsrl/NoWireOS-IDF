@@ -26,7 +26,7 @@ sort ZZZ_RPC_List.txt | while read rpc_cmd; do
 	echo -e "${comma}\"$rpc_cmd\"" >> $cmdh
 	comma=","
 done 
-tee -a $cmdh > $idsh << EOT
+tee -a $cmdh >> $idsh << EOT
 );
 #endif
 EOT
