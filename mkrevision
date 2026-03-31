@@ -24,7 +24,7 @@ echo -e "};" >> $cmdh
 # Generates prototypes
 for fn in src/*.c*; do
 	fh=$(sed -E -e 's/[.].*/.h/g' -e 's/.*\//include\//g' <<< $fn)
-	ft="__PROTO_$(sed -E -e 's/\(.*\)/\U\1/'-e 's/[.-]/_/g' <<< $fn)__"
+	ft="__PROTO_$(sed 's/[.-]/_/g' <<< $fn | tr '[:lower:]' '[:upper:]')__"
 	echo "extracting prototypes from  $fn to $fh: $ft ..." 1>&2
 	continue
 	echo -n > $ft
