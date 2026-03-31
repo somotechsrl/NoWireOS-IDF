@@ -43,7 +43,7 @@ for fn in src/*c*; do
 	grep -q static <<< $fn && continue
 	echo "extracting prototypes from  $fn..."
 	echo "// ****************************" >> $protoh
-	echo "// $fn" >> Revision.h
+	echo "// $fn" >> $protoh
 	echo "// ****************************" >> $protoh
 	grep '[a-z0-9A-Z_]\+ [a-z0-9A-Z_*]\+ *([a-z0-9A-Z,*& _.]*) *{' $fn \
 		| sed  -e 's/ {.*$/;/g' \
