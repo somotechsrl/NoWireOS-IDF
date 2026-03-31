@@ -15,7 +15,7 @@ EOT
 cat > $cmdh << EOT
 #ifndef __RPC_CMD__
 #define __RPC_CMD__
-static enum RPC_ids {" 
+static char *RPC_cmd {" 
 EOT
 sort ZZZ_RPC_List.txt | while read rpc_cmd; do
 	rpc_cmd=$(sed 's/ //g' <<< $rpc_cmd)

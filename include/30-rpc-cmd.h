@@ -1,6 +1,6 @@
 #ifndef __RPC_CMD__
 #define __RPC_CMD__
-static enum RPC_ids {" 
+static char *RPC_cmd {" 
  "CFG.Debug|"
 ,"CFG.Leds.Disable"
 ,"CFG.Leds.Enable"
