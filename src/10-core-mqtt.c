@@ -1,6 +1,13 @@
 #include "main.h"
 #include "mqtt_client.h"
-
+ 
+#define TSIZE 128
+#define THEAD "nowireos"
+#define BOARDID "esp32"
+static char topic_up[TSIZE];
+static char topic_rpc[TSIZE];
+static char topic_down[TSIZE];
+ 
 static const char *TAG = "MQTT";
 
 static void mqtt_event_handler(void *handler_args, esp_event_base_t base, int32_t event_id, void *event_data)
@@ -11,7 +18,8 @@ static void mqtt_event_handler(void *handler_args, esp_event_base_t base, int32_
     switch (event->event_id) {
         case MQTT_EVENT_CONNECTED:
             ESP_LOGI(TAG, "MQTT_EVENT_CONNECTED");
-            esp_mqtt_client_subscribe(client, "topic/test", 0);
+            esp_mqtt_client_subscribe(client,topic_rpc, 0);
+            esp_mqtt_client_subscribe(client,topic_down, 0);
             break;
         case MQTT_EVENT_DISCONNECTED:
             ESP_LOGI(TAG, "MQTT_EVENT_DISCONNECTED");
@@ -36,7 +44,19 @@ static void mqtt_event_handler(void *handler_args, esp_event_base_t base, int32_
     }
 }
 
+void mqtt_send(const char *payload) {
+    esp_mqtt_client_handle_t client = esp_mqtt_client_init(NULL);
+    esp_mqtt_client_publish(client, topic_up, payload, 0, 1, 0);
+}       
+
 void mqtt_init(void) {
+
+    // sets topic values
+    snprintf(topic_up, TSIZE, "%s/%s/%s/up",THEAD,BOARDID,mac_str);
+    snprintf(topic_rpc, TSIZE, "%s/%s/%s/rpc", THEAD, BOARDID, mac_str);
+    snprintf(topic_down, TSIZE, "%s/%s/%s/down", THEAD,BOARDID, mac_str);
+
+
     const esp_mqtt_client_config_t mqtt_cfg = {
         .broker.address.uri = "mqtt://rpc.somotech.it:2983",
         .broker.verification.certificate = NULL,

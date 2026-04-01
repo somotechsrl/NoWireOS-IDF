@@ -5,6 +5,7 @@
 #include <sys/time.h>
 #include <unistd.h>
 #include "10-json-encoder.h"
+#include "10-core-mqtt.h"
 
 modbus_config modbus_cfg;
 
@@ -13,7 +14,7 @@ static const char *TAG = "MODBUS_CLIENT";
 #define MODBUS_TCP_DEFAULT_HOST "192.168.43.169"
 #define MODBUS_TCP_DEFAULT_PORT 502
 #define MODBUS_TCP_UNIT_ID 1
-#define MODBUS_TCP_RETRY_DELAY_MS 1000
+#define MODBUS_TCP_RETRY_DELAY_MS 10000
 #define MODBUS_TCP_REQUEST_TIMEOUT_SEC 5
 #define MODBUS_TCP_MAX_REGISTERS 32
 #define MODBUS_NUMBER_OF_REGISTERS 16
@@ -184,16 +185,17 @@ static uint16_t *modbus_read_json(int sock, int func, uint16_t start_address, ui
     sprintf(jobjectid,"r%04x",start_address);
 
     jsonAddArray(jobjectid);
-    jsonAddValue(func);
-    jsonAddValue(0); // will be replaced by query result
-    jsonAddValue(start_address);
+    jsonAddValue_uint8_t(func);
+    jsonAddValue_uint16_t(0); // will be replaced by query result
+    jsonAddValue_uint16_t(start_address);
     
     if ((response=modbus_read_holding_registers(sock,0x1000, quantity))!=NULL) {
     for (uint16_t i = 0; i < quantity; ++i) {
-        ESP_LOGI(TAG, "holding register[%d] = 0x%04X", i, response[i]);
-        jsonAddValue(response[i]);
+        //ESP_LOGI(TAG, "holding register[%d] = 0x%04X", i, response[i]);
+        jsonAddValue_uint16_t(response[i]);
         }
     }
+
     return response;
 }
 
@@ -205,25 +207,27 @@ static void modbus_client_task(void *pvParameters) {
     while (true) {
 
         jsonInit();
-        jsonAddObject("DEV","contrel-emm");
-        jsonAddObject("BUS",MODBUS_TCP_DEFAULT_HOST);
-        jsonAddObject("CHN","modbus");
+        jsonAddObject_string("DEV","contrel-emm");
+        jsonAddObject_string("BUS",MODBUS_TCP_DEFAULT_HOST);
+        jsonAddObject_string("CHN","modbus");
         jsonAddObject("data");
 
         int sock = modbus_tcp_connect(server_host, server_port);
         if (sock >= 0) {
             uint16_t *response;
+            response=modbus_read_json(sock, 0x03, 0x1000, MODBUS_NUMBER_OF_REGISTERS);
+            /*
             if ((response=modbus_read_json(sock, 0x03, 0x1000, MODBUS_NUMBER_OF_REGISTERS))!=NULL) {
                 for (int i = 0; i < MODBUS_NUMBER_OF_REGISTERS; ++i) {
-                    ESP_LOGI(TAG, "holding register[%d] = 0x%04X", i, response[i]);
+                    //ESP_LOGI(TAG, "holding register[%d] = 0x%04X", i, response[i]);
                 }
             }
+            */
             close(sock);
         }
 
-        jsonCloseAll();
-
-        
+        jsonCloseAll();        
+        ESP_LOGI(TAG,"%s",jsonGetBuffer());
         vTaskDelay(pdMS_TO_TICKS(MODBUS_TCP_RETRY_DELAY_MS));
     }
 }

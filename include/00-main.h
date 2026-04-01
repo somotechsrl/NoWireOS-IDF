@@ -4,5 +4,5 @@
 // ****************************
 // src/00-main.c prototypes
 // ****************************
-extern "C" void app_main();
+void app_main();
 #endif
