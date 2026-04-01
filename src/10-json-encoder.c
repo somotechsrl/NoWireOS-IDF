@@ -99,6 +99,12 @@ uint16_t jsonGetCompressedSize() {
   return rp - r;
 }
 
+const char *jsonGetBase64() {
+  static char b64buffer[BUFSIZE];
+  rbase64_encode(jsonGetEncryptedBuffer(), jsonGetCompressedSize(), b64buffer);
+  return b64buffer;
+}
+
 // binary buffer add function
 static void bpAddValue(const char vtype, const void *vvalue, const uint8_t vsize) {
 

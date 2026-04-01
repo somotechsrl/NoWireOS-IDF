@@ -7,7 +7,8 @@
 static char topic_up[TSIZE];
 static char topic_rpc[TSIZE];
 static char topic_down[TSIZE];
- 
+static esp_mqtt_client_handle_t client;
+
 static const char *TAG = "MQTT";
 
 static void mqtt_event_handler(void *handler_args, esp_event_base_t base, int32_t event_id, void *event_data)
@@ -45,7 +46,7 @@ static void mqtt_event_handler(void *handler_args, esp_event_base_t base, int32_
 }
 
 void mqtt_send(const char *payload) {
-    esp_mqtt_client_handle_t client = esp_mqtt_client_init(NULL);
+    //esp_mqtt_client_handle_t client = esp_mqtt_client_init(NULL);
     esp_mqtt_client_publish(client, topic_up, payload, 0, 1, 0);
 }       
 
@@ -63,7 +64,7 @@ void mqtt_init(void) {
 
     };
 
-    esp_mqtt_client_handle_t client = esp_mqtt_client_init(&mqtt_cfg);
+    client = esp_mqtt_client_init(&mqtt_cfg);
     esp_mqtt_client_register_event(client, ESP_EVENT_ANY_ID, mqtt_event_handler, NULL);
     esp_mqtt_client_start(client);
 }
