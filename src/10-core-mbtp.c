@@ -228,6 +228,8 @@ static void modbus_client_task(void *pvParameters) {
 
         jsonCloseAll();        
         ESP_LOGI(TAG,"%s",jsonGetBuffer());
+        ESP_LOGI(TAG,"%s",jsonGetBase64());
+
 
         mqtt_send(jsonGetBase64());
         vTaskDelay(pdMS_TO_TICKS(MODBUS_TCP_RETRY_DELAY_MS));

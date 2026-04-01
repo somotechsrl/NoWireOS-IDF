@@ -103,8 +103,11 @@ uint16_t jsonGetCompressedSize() {
 
 const char *jsonGetBase64() {
   size_t olen;
+  unsigned char *jb;
   static unsigned char b64buffer[BUFSIZE];
-  mbedtls_base64_encode(b64buffer,jsonGetCompressedSize(),&olen,(const unsigned char *)jsonGetEncryptedBuffer());
+  jb=(const unsigned char *)jsonGetCompressedBuffer();
+  for(int i=0;i<rp-r;i++) jb[i]=r[i] ^ XKEY;
+  mbedtls_base64_encode(b64buffer, sizeof(b64buffer), &olen, jb, rp - r);
   return (char *)b64buffer;
 }
 
