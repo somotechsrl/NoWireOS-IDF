@@ -23,7 +23,7 @@ static void rpcWrongParams(const char *bitname, int res) {
 }
 
 // retrives command sequence if for switch/case
-static int getCommandID(const char *rpcmd)) {
+static int getCommandID(const char *rpcmd) {
   for (int i = 0; i<sizeof(RPC_cmd);i++) {
     if (!strcmp(rpcmd, RPC_cmd[i])) return i;
   }
