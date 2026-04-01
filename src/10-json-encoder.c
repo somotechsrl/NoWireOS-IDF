@@ -77,7 +77,7 @@ static const char *jsonComma() {
 }
 
 // gets jsonBuffer
-const unsigned char *jsonGetBuffer() {
+const char *jsonGetBuffer() {
   return s;
 }
 // gets jsonBuffer
@@ -86,12 +86,12 @@ uint16_t jsonGetBufferSize() {
 }
 
 // uses compressed json
-const unsigned char *jsonGetCompressedBuffer() {
+const char *jsonGetCompressedBuffer() {
   return r;
 }
 
 // uses encryption
-const unsigned char *jsonGetEncryptedBuffer() {
+const char *jsonGetEncryptedBuffer() {
   static char jcbuffer[BUFSIZE];
   for(int i=0;i<rp-r;i++) jcbuffer[i]=r[i] ^ XKEY;
   return jcbuffer;
@@ -101,9 +101,10 @@ uint16_t jsonGetCompressedSize() {
   return rp - r;
 }
 
-const char *jsonGetBase64() {
+const unsigned char *jsonGetBase64() {
+  size_t olen;
   static unsigned char b64buffer[BUFSIZE];
-  mbedtls_base64_encode(jsonGetEncryptedBuffer(), jsonGetCompressedSize(), b64buffer);
+  mbedtls_base64_encode(b64buffer,jsonGetCompressedSize(),&olen,(const unsigned char *)jsonGetEncryptedBuffer());
   return b64buffer;
 }
 

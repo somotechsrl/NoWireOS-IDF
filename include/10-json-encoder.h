@@ -6,12 +6,12 @@
 // ****************************
 void jsonClear();
 void jsonInit();
-const unsigned char *jsonGetBuffer();
+const char *jsonGetBuffer();
 uint16_t jsonGetBufferSize();
-const unsigned char *jsonGetCompressedBuffer();
-const unsigned char *jsonGetEncryptedBuffer();
+const char *jsonGetCompressedBuffer();
+const char *jsonGetEncryptedBuffer();
 uint16_t jsonGetCompressedSize();
-const char *jsonGetBase64();
+const unsigned char *jsonGetBase64();
 void jsonClose();
 void jsonCloseAll();
 void jsonAddValue_int_8(int8_t value);
