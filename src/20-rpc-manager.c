@@ -4,6 +4,7 @@
 #include "30-rpc-ids.h"
 #include "10-json-encoder.h"
 #include "10-core-mqtt.h"
+#include "10-json-encoder.h"
 
 /*******************************************************************************
    RPC Parser/Executor module
