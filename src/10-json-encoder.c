@@ -101,11 +101,11 @@ uint16_t jsonGetCompressedSize() {
   return rp - r;
 }
 
-const unsigned char *jsonGetBase64() {
+const char *jsonGetBase64() {
   size_t olen;
   static unsigned char b64buffer[BUFSIZE];
   mbedtls_base64_encode(b64buffer,jsonGetCompressedSize(),&olen,(const unsigned char *)jsonGetEncryptedBuffer());
-  return b64buffer;
+  return (char *)b64buffer;
 }
 
 // binary buffer add function
