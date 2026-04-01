@@ -4,6 +4,7 @@
 // ****************************
 // src/10-core-mqtt.c prototypes
 // ****************************
-void mqtt_send(const char *payload);
+void mqtt_send_up(const char *payload);
+void mqtt_send_rpc(const char *payload);
 void mqtt_init(void);
 #endif

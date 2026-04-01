@@ -45,9 +45,14 @@ static void mqtt_event_handler(void *handler_args, esp_event_base_t base, int32_
     }
 }
 
-void mqtt_send(const char *payload) {
+void mqtt_send_up(const char *payload) {
     //esp_mqtt_client_handle_t client = esp_mqtt_client_init(NULL);
     esp_mqtt_client_publish(client, topic_up, payload, 0, 1, 0);
+}       
+
+void mqtt_send_rpc(const char *payload) {
+    //esp_mqtt_client_handle_t client = esp_mqtt_client_init(NULL);
+    esp_mqtt_client_publish(client, topic_rpc, payload, 0, 1, 0);
 }       
 
 void mqtt_init(void) {
