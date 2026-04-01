@@ -1,5 +1,7 @@
 #include "main.h"
 #include "10-json-encoder.h"
+#include "mbedtls/base64.h"
+
 
 
 // Json formatting utilities
@@ -75,7 +77,7 @@ static const char *jsonComma() {
 }
 
 // gets jsonBuffer
-const char *jsonGetBuffer() {
+const unsigned char *jsonGetBuffer() {
   return s;
 }
 // gets jsonBuffer
@@ -84,12 +86,12 @@ uint16_t jsonGetBufferSize() {
 }
 
 // uses compressed json
-const char *jsonGetCompressedBuffer() {
+const unsigned char *jsonGetCompressedBuffer() {
   return r;
 }
 
 // uses encryption
-const char *jsonGetEncryptedBuffer() {
+const unsigned char *jsonGetEncryptedBuffer() {
   static char jcbuffer[BUFSIZE];
   for(int i=0;i<rp-r;i++) jcbuffer[i]=r[i] ^ XKEY;
   return jcbuffer;
@@ -100,8 +102,8 @@ uint16_t jsonGetCompressedSize() {
 }
 
 const char *jsonGetBase64() {
-  static char b64buffer[BUFSIZE];
-  rbase64_encode(jsonGetEncryptedBuffer(), jsonGetCompressedSize(), b64buffer);
+  static unsigned char b64buffer[BUFSIZE];
+  mbedtls_base64_encode(jsonGetEncryptedBuffer(), jsonGetCompressedSize(), b64buffer);
   return b64buffer;
 }
 
