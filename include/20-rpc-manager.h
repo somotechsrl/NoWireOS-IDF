@@ -5,5 +5,4 @@
 // src/20-rpc-manager.c prototypes
 // ****************************
 void rpcManage(const char *payload, bool sync);
-void rpcManage(const char *payload, bool sync);
 #endif

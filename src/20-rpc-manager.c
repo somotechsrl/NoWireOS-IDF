@@ -6,14 +6,15 @@
 /*******************************************************************************
    RPC Parser/Executor module
 */
-/*
-#define DEBUG_RPC "RPC"
+
+
+#define TAG "RPC"
 
 bool trigger = false;
 static char rpcmsg[256];
 
 static void rpcMessage(const char* msg) {
-  jsonAddObject("message", msg);
+  jsonAddObject_string("message", msg);
 }
 
 static void rpcWrongParams(const char *bitname, int res) {
@@ -30,73 +31,62 @@ static int getCommandID(const char *rpcmd, const char **cmdlist) {
 }
 
 // Work with string which is more efficent
+
 void rpcManage(const char *payload, bool sync) {
 
-    String OK = String(F("OK"));
-  String KO = String(F("KO"));
-  String invPin = String(F("Invalid PIN"));
-
-  debug(DEBUG_RPC, "Received:" + payload);
-
-  // Switch Used Variables
-  int pin, res;
-  String c, rpcresp, rpcresult = "";
-
-  // format is always ID|command[|data] (data is optional)
-  const char *sep = "|";
+  const char *OK = "OK";
+  const char *KO = String(F("KO"));
+  const char *SEP = "|"
+  const char RESULT = "result";
+  
+  ESP_LOGI(TAG, "Received: %s", payload);
 
   // extracts ID and Command
-  int pos = payload.indexOf(sep);
-  if (pos < 0) return;
+  char *r = strtok(payload,"|");
+  char *rpccommand = strtok(NULL,"|");
+  char *rpcparams = strtok(NULL,"|");
 
-  String rpcid = String("R") + payload.substring(0, pos);
-  String rpcmd = payload.substring(pos + 1);
-
-  // Calculates subpos for parameter
-  int sub = rpcmd.indexOf(sep) + 1;
-  String bitname = sub > 1 ? rpcmd.substring(sub) : "";
-  String cmdname = sub > 1 ? rpcmd.substring(0, sub - 1) : rpcmd;
+  char respid[64];
+  snprintf(respid, sizeof(respid), "R%s", requestid);
 
   // sets rpcid
-  int cmdid = getCommandID(rpcmd, RPC_cmd);
+  int cmdid = getCommandID(rpccommand, RPC_cmd);
 
-  debug(DEBUG_RPC,String("ID:")+rpcid);
-  debug(DEBUG_RPC,rpcmd + " (ID: " + cmdid + ")");
+  ESP_LOGI(TAG, "ID: %s Command: %s (ID: %d)", respid, rpccommand, cmdid);
 
   // recived something.. init json Response Buffer
   // submodule MUST NOT call jsonInit/jsonCloseAll for respnses!!!
   jsonInit();
-  jsonAddObject(rpcid.c_str());
-  jsonAddObject("result");
-  //jsonAddObject(cmdname.c_str());
-
+  jsonAddObject(respid);
+  jsonAddObject(RESULT);
+  
   // rpcStatus default is 'OK'
-  String rpcStatus = OK;
+  char *rpcStatus = OK;
 
   switch (cmdid) {
     case CFG_Debug:
-      setDebugMode(bitname.toInt());
+      //setDebugMode(bitname.toInt());
       break;
      case CFG_Leds_Enable:
-      ledEnable();
+      //ledEnable();
       break;
     case CFG_Leds_Disable:
-      ledDisable();
+      //ledDisable();
       break;
     case CFG_Timestep:
       // timestep is received in s, converted in ms
-      if (bitname != "") timestep = bitname.toInt()*1000;
-      if (timestep < MINTSTEP*1000) {
-        debug(DEBUG_RPC,String("Timestep too low, forced to ")+MINTSTEP);
-        timestep = MINTSTEP*1000;
-      }
-      jsonAddObject("value", (uint32_t)timestep/1000);
+      //if (bitname != "") timestep = bitname.toInt()*1000;
+      //if (timestep < MINTSTEP*1000) {
+      //  debug(DEBUG_RPC,String("Timestep too low, forced to ")+MINTSTEP);
+      //  timestep = MINTSTEP*1000;
+      //}
+      jsonAddObject_uint32_t("value", (uint32_t)timestep/1000);
       break;
 
     // ************ RPC group Commands
     case RPC_Trigger:
       trigger=true;
-      jsonAddObject("value","Datalogger Triggered");
+      jsonAddObject_string("value","Datalogger Triggered");
       break;
       
     case RPC_List:
@@ -112,26 +102,24 @@ void rpcManage(const char *payload, bool sync) {
 
     // ************ System Related Commands
     case Sys_GetInfo:
-      sysGetInfo();
+      //sysGetInfo();
       break;
     case Sys_GetStatus:
-      sysGetStatus();
+      //sysGetStatus();
       break;
     case Sys_Reboot:
-      enableReboot();
+      //enableReboot();
       break;
     case Sys_Cancel_Reboot:
-      cancelReboot();
+      //cancelReboot();
       break;
     case Sys_Identify:
-      identifyPixel();
+      //identifyPixel();
       break;
 
-#if defined(__MODBUS_TCP__)
     case CFG_Modbus_AddCall:
-      addModbusCall(bitname.c_str());
+      //addModbusCall(params));
       break;
-#endif
 
     // ************ Unknow management
     default:
@@ -142,17 +130,12 @@ void rpcManage(const char *payload, bool sync) {
 
   // Closes response Buffer and sets response status
   jsonClose();
-  jsonAddObject("status", rpcStatus);
+  jsonAddObject_string("status", rpcStatus);
   jsonCloseAll();
 
-  debug(DEBUG_RPC,(sync ? String("SYNC:") : String("ASYNC:"))+jsonGetBuffer());
+  ESP_LOGI(TAG, "MODE: %s", sync ? "SYNC:" : "ASYNC:");
+  ESP_LOGI(TAG, "%s", jsonGetBuffer());
   if(sync) mqttRpcUp(rpcid,sync);
   jsonClear();
   
 }
-
-void rpcManage(const char *payload, bool sync) {
-  String d = String(payload);
-  return rpcManage(d, sync);
-}
-*/
