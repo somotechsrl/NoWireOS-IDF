@@ -16,14 +16,22 @@
 #include "esp_log.h"
 #include "nvs_flash.h"
 #include "esp_http_server.h"
+#include <esp_chip_info.h>
 
 //#include "10-json-encoder.hpp"
 //#include "00-prototypes.h"
 
-#define BUFSIZE 2048
+#define BUFSIZE 1024
+#define BUFTINY 128
 #define MODBUS_CONFIGS 50
 
+#define OK "OK"
+#define KO "KO"
+#define SEP "|"
+#define RESULT "result"
+
 extern char mac_str[];
+extern esp_chip_info_t chip_info;
 
 // Modbus configuration entry
 typedef struct {

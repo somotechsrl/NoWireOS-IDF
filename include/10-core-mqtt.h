@@ -5,6 +5,7 @@
 // src/10-core-mqtt.c prototypes
 // ****************************
 void mqtt_send_up_data(const char *payload);
+void mqtt_send_rpc_response(const char *respid,const char *payload);
 void mqtt_handle_received(const char *topic, const char *data);
 void mqtt_init(void);
 #endif

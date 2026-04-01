@@ -1,6 +1,7 @@
 #include "main.h"
 #include "mqtt_client.h"
 #include "10-core-mqtt.h"
+#include "20-rpc-manager.h"
  
 #define TSIZE 128
 #define THEAD "nowireos"
@@ -52,13 +53,21 @@ static void mqtt_event_handler(void *handler_args, esp_event_base_t base, int32_
 void mqtt_send_up_data(const char *payload) {
     // esp_mqtt_client_handle_t client = esp_mqtt_client_init(NULL);
     esp_mqtt_client_publish(client, topic_up, payload, 0, 1, 0);
+}
+
+void mqtt_send_rpc_response(const char *respid,const char *payload) {
+    // esp_mqtt_client_handle_t client = esp_mqtt_client_init(NULL);
+    char topic_resp[TSIZE];
+    snprintf(topic_resp, TSIZE, "%s/%s/%s/rpc/%s", THEAD, BOARDID, mac_str, respid);
+    ESP_LOGI(TAG, "Sending RPC Response: %s :: %s", topic_resp, payload);
+    esp_mqtt_client_publish(client, topic_resp, payload, 0, 1, 0);
 }       
 
 void mqtt_handle_received(const char *topic, const char *data) {
     if (strncmp(topic, topic_rpc, strlen(topic_rpc)) == 0) {
         ESP_LOGI(TAG, "Received RPC message: %s :: %s", topic,data);
         // Handle RPC request
-        rpc_manage(data, true);
+        rpcManage(data, true);
     } else if (strncmp(topic, topic_down, strlen(topic_down)) == 0) {
         // Handle downlink message
         ESP_LOGI(TAG, "Received DOWN message: %s :: %s",topic, data);

@@ -6,10 +6,13 @@
 // mac address array and string
 uint8_t mac[6];
 char mac_str[13];
+esp_chip_info_t chip_info;
 
 void app_main() {
 
-    // Initialize NVS
+    esp_chip_info(&chip_info);
+    
+     // Initialize NVS
     esp_err_t ret = nvs_flash_init();
     if (ret == ESP_ERR_NVS_NO_FREE_PAGES || ret == ESP_ERR_NVS_NEW_VERSION_FOUND) {
         ESP_ERROR_CHECK(nvs_flash_erase());

@@ -1,4 +1,5 @@
 #include "main.h"
+#include <string.h>
 #include "30-rpc-cmd.h"
 #include "30-rpc-ids.h"
 #include "10-json-encoder.h"
@@ -24,7 +25,8 @@ static void rpcWrongParams(const char *bitname, int res) {
 
 // retrives command sequence if for switch/case
 static int getCommandID(const char *rpcmd) {
-  for (int i = 0; i<sizeof(RPC_cmd);i++) {
+  int size=sizeof(RPC_cmd)/sizeof(RPC_cmd[0]);
+  for (int i = 0; i<size;i++) {
     if (!strcmp(rpcmd, RPC_cmd[i])) return i;
   }
   return -1;
@@ -34,25 +36,22 @@ static int getCommandID(const char *rpcmd) {
 
 void rpcManage(const char *payload, bool sync) {
 
-  const char *OK = "OK";
-  const char *KO = "KO";
-  const char *SEP = "|";
-  const char *RESULT = "result";
-  
   ESP_LOGI(TAG, "Received: %s", payload);
 
   // extracts ID and Command
-  char *p=strdup(payload);
-  char *requestid = strtok(p,"|");
-  char *rpccommand = strtok(NULL,"|");
-  char *rpcparams = strtok(NULL,"|");
+  char *p,rpcb[BUFTINY];
+  strcpy(rpcb, payload);
 
-  char respid[64];
-  snprintf(respid, sizeof(respid), "R%s", requestid);
+  char *request_id = (p=strtok(rpcb,"|"))!=NULL ? p : "";
+  char *rpccommand = (p=strtok(NULL,"|"))!=NULL ? p : "";
+  char *rpc_params = (p=strtok(NULL,"|"))!=NULL ? p : "";
+
+  char respid[BUFTINY];
+  snprintf(respid, sizeof(respid), "R%s", request_id);
+  ESP_LOGI(TAG, "Splitting: %s :: %s :: %s --> %s", request_id,rpccommand,rpc_params, respid);
 
   // sets rpcid
   int cmdid = getCommandID(rpccommand);
-
   ESP_LOGI(TAG, "ID: %s Command: %s (ID: %d)", respid, rpccommand, cmdid);
 
   // recived something.. init json Response Buffer
@@ -62,7 +61,7 @@ void rpcManage(const char *payload, bool sync) {
   jsonAddObject(RESULT);
   
   // rpcStatus default is 'OK'
-  char *rpcStatus = (char *)OK;
+  char *rpcStatus = OK;
   char result[BUFSIZE] = "Executed successfully";
 
   switch (cmdid) {
@@ -93,7 +92,8 @@ void rpcManage(const char *payload, bool sync) {
       
     case RPC_List:
       jsonAddArray("RPC.List");
-      for (int i = 0; i<sizeof(RPC_cmd);i++) {
+      int size=sizeof(RPC_cmd)/sizeof(RPC_cmd[0]);
+      for (int i = 0; i<size;i++) {
         jsonAddValue_string(RPC_cmd[i]);
       }
       jsonClose();
@@ -123,7 +123,8 @@ void rpcManage(const char *payload, bool sync) {
     // ************ Unknow management
     default:
       rpcStatus = KO;
-      snprintf(result, sizeof(result), "%s(%s): %s", rpccommand,rpcparams, "not implemented");
+      snprintf(result, sizeof(result), "%s(%s): %s", rpccommand,rpc_params, "not implemented");
+      jsonAddObject_string("value",result);
  
   }
 
@@ -134,7 +135,7 @@ void rpcManage(const char *payload, bool sync) {
 
   ESP_LOGI(TAG, "MODE: %s", sync ? "SYNC:" : "ASYNC:");
   ESP_LOGI(TAG, "%s", jsonGetBuffer());
-  //if(sync) mqttRpcUp(rpcid,sync);
+  if(sync) mqtt_send_rpc_response(respid);
   jsonClear();
   
 }
