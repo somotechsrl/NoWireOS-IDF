@@ -1,8 +1,8 @@
-#ifndef __PROTO_10_JSON_ENCODER_CC__
-#define __PROTO_10_JSON_ENCODER_CC__
+#ifndef __PROTO_10_JSON_ENCODER_C__
+#define __PROTO_10_JSON_ENCODER_C__
 //Extracted Prototyes
 // ****************************
-// src/10-json-encoder.cc prototypes
+// src/10-json-encoder.c prototypes
 // ****************************
 void jsonClear();
 void jsonInit();
@@ -13,24 +13,23 @@ const char *jsonGetEncryptedBuffer();
 uint16_t jsonGetCompressedSize();
 void jsonClose();
 void jsonCloseAll();
-void jsonAddValue(int8_t value);
-void jsonAddValue(int16_t value);
-void jsonAddValue(int value);
-void jsonAddValue(int32_t value);
-void jsonAddValue(char value);
-void jsonAddValue(uint8_t value);
-void jsonAddValue(uint16_t value);
-void jsonAddValue(uint32_t value);
-void jsonAddValue(float value);
-void jsonAddValue(double value);
-void jsonAddValue(const char *value);
+void jsonAddValue_int_8(int8_t value);
+void jsonAddValue_int_16(int16_t value);
+void jsonAddValue_int_32(int32_t value);
+void jsonAddValue_char(char value);
+void jsonAddValue_uint8_t(uint8_t value);
+void jsonAddValue_uint16_t(uint16_t value);
+void jsonAddValue_uint32_t(uint32_t value);
+void jsonAddValue_float(float value);
+void jsonAddValue_double  (double value);
+void jsonAddValue_string(const char *value);
 void jsonAddArray(const char *oname);
 void jsonAddObject(const char *oname);
-void jsonAddObject(const char *oname, const char *value);
-void jsonAddObject(const char *oname, uint8_t value);
+void jsonAddObject_string(const char *oname, const char *value);
+void jsonAddObject_uint8_t(const char *oname, uint8_t value);
 void jsonAddObject(const char *oname, bool value);
-void jsonAddObject(const char *oname, uint16_t value);
-void jsonAddObject(const char *oname, uint32_t value);
-void jsonAddObject(const char *oname, float value);
-void jsonAddObject(const char *oname, double value);
+void jsonAddObject_uint16_t(const char *oname, uint16_t value);
+void jsonAddObject_uint32_t(const char *oname, uint32_t value);
+void jsonAddObject_float(const char *oname, float value);
+void jsonAddObject_double(const char *oname, double value);
 #endif

@@ -7,7 +7,7 @@
 uint8_t mac[6];
 char mac_str[13];
 
-void app_main() {
+extern "C" void app_main() {
 
     // Initialize NVS
     esp_err_t ret = nvs_flash_init();

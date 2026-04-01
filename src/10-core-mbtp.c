@@ -98,7 +98,7 @@ uint16_t *modbus_read(int sock, int func, uint16_t start_address, uint16_t quant
 
     if (send(sock, request, sizeof(request), 0) != sizeof(request)) {
         ESP_LOGW(TAG, "failed to send Modbus request: %s", strerror(errno));
-        return false;
+        return NULL;
     }
 
     modbus_transaction_id++;
@@ -108,7 +108,7 @@ uint16_t *modbus_read(int sock, int func, uint16_t start_address, uint16_t quant
 
     uint8_t header[7];
     if (!modbus_receive_all(sock, header, sizeof(header))) {
-        return false;
+        return NULL;
     }
 
     uint16_t recv_transaction = (header[0] << 8) | header[1];
@@ -177,11 +177,6 @@ uint16_t *modbus_read_input_registers(int sock, uint16_t start_address, uint16_t
     return modbus_read(sock, 0x04, start_address, quantity);
 }
 
-char *modbus_read_json(int sock, int func, uint16_t start_address, uint16_t quantity) {
-    // Implementation for reading Modbus data and converting to JSON
-
-}
-
 static uint16_t *modbus_read_json(int sock, int func, uint16_t start_address, uint16_t quantity) {
 
     uint16_t *response;
@@ -191,7 +186,7 @@ static uint16_t *modbus_read_json(int sock, int func, uint16_t start_address, ui
     jsonAddArray(jobjectid);
     jsonAddValue(func);
     jsonAddValue(0); // will be replaced by query result
-    jsonaddValue(start_address);
+    jsonAddValue(start_address);
     
     if ((response=modbus_read_holding_registers(sock,0x1000, quantity))!=NULL) {
     for (uint16_t i = 0; i < quantity; ++i) {
@@ -208,6 +203,13 @@ static void modbus_client_task(void *pvParameters) {
     const uint16_t server_port = MODBUS_TCP_DEFAULT_PORT;
 
     while (true) {
+
+        jsonInit();
+        jsonAddObject("DEV","contrel-emm");
+        jsonAddObject("BUS",MODBUS_TCP_DEFAULT_HOST);
+        jsonAddObject("CHN","modbus");
+        jsonAddObject("data");
+
         int sock = modbus_tcp_connect(server_host, server_port);
         if (sock >= 0) {
             uint16_t *response;
@@ -218,6 +220,10 @@ static void modbus_client_task(void *pvParameters) {
             }
             close(sock);
         }
+
+        jsonCloseAll();
+
+        
         vTaskDelay(pdMS_TO_TICKS(MODBUS_TCP_RETRY_DELAY_MS));
     }
 }

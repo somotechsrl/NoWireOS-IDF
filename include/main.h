@@ -1,6 +1,11 @@
 #include <stdio.h>
 #include <string.h>
-#include "freertos/FreeRTOS.h"
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+#include <sys/time.h>     
+
+
 #include "freertos/task.h"
 #include "freertos/event_groups.h"
 #include "esp_wifi.h"
