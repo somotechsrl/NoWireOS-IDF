@@ -39,4 +39,8 @@ void app_main() {
     mqtt_init();
     modbus_init();
 
+    // blinker
+    led_blink();
+    
+ 
 }

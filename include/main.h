@@ -4,6 +4,8 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <sys/time.h>     
+#include "driver/gpio.h"
+#include "sdkconfig.h"
 
 
 #include "freertos/task.h"
