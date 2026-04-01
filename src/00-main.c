@@ -5,7 +5,8 @@
 
 // mac address array and string
 uint8_t mac[6];
-char mac_str[13];
+char mac_str[20];
+char serial_str[16];
 esp_chip_info_t chip_info;
 
 void app_main() {
@@ -23,6 +24,9 @@ void app_main() {
     // Reads base MAC address from eFuse ad sets
     esp_read_mac(mac, ESP_MAC_BASE);
     sprintf(mac_str,
+        "%02X:%02X:%02X:%02X:%02X:%02X",
+        mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);  
+    sprintf(serial_str,
         "%02X%02X%02X%02X%02X%02X",
         mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);  
     

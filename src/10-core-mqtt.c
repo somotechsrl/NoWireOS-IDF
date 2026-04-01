@@ -59,7 +59,7 @@ void mqtt_send_up_data(const char *payload) {
 void mqtt_send_rpc_response(const char *respid) {
     // esp_mqtt_client_handle_t client = esp_mqtt_client_init(NULL);
     char topic_resp[TSIZE];
-    snprintf(topic_resp, TSIZE, "%s/%s/%s/rpc/%s", THEAD, BOARDID, mac_str, respid);
+    snprintf(topic_resp, TSIZE, "%s/%s/%s/rpc/%s", THEAD, BOARDID, serial_str, respid);
     ESP_LOGI(TAG, "Sending RPC Response: %s :: %s", topic_resp, jsonGetBuffer());
     esp_mqtt_client_publish(client, topic_resp, jsonGetBase64(), 0, 1, 0);
 }       
@@ -81,9 +81,9 @@ void mqtt_handle_received(const char *topic, const char *data) {
 void mqtt_init(void) {
 
     // sets topic values
-    snprintf(topic_up, TSIZE, "%s/%s/%s/up",THEAD,BOARDID,mac_str);
-    snprintf(topic_rpc, TSIZE, "%s/%s/%s/rpc", THEAD, BOARDID, mac_str);
-    snprintf(topic_down, TSIZE, "%s/%s/%s/down", THEAD,BOARDID, mac_str);
+    snprintf(topic_up, TSIZE, "%s/%s/%s/up",THEAD,BOARDID,serial_str);
+    snprintf(topic_rpc, TSIZE, "%s/%s/%s/rpc", THEAD, BOARDID, serial_str);
+    snprintf(topic_down, TSIZE, "%s/%s/%s/down", THEAD,BOARDID, serial_str);
 
 
     static const esp_mqtt_client_config_t mqtt_cfg = {

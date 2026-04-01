@@ -32,7 +32,8 @@
 #define RESULT "result"
 
 extern char ipaddr[16];
-extern char mac_str[];
+extern char mac_str[20];
+extern char serial_str[16];
 extern esp_chip_info_t chip_info;
 
 // Modbus configuration entry
