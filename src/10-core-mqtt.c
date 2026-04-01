@@ -36,6 +36,13 @@ static void mqtt_event_handler(void *handler_args, esp_event_base_t base, int32_
             break;
         case MQTT_EVENT_DATA:
             ESP_LOGI(TAG, "MQTT_EVENT_DATA topic: %.*s, data: %.*s", event->topic_len, event->topic, event->data_len, event->data);
+            if (strncmp(event->topic, topic_rpc, event->topic_len) == 0) {
+                // Handle RPC request
+                mqtt_send_rpc_response("RPC response payload");
+            } else if (strncmp(event->topic, topic_down, event->topic_len) == 0) {
+                // Handle downlink message
+                ESP_LOGI(TAG, "Received downlink message: %.*s", event->data_len, event->data);
+            }
             break;
         case MQTT_EVENT_ERROR:
             ESP_LOGI(TAG, "MQTT_EVENT_ERROR");
@@ -50,7 +57,7 @@ void mqtt_send_up_data(const char *payload) {
     esp_mqtt_client_publish(client, topic_up, payload, 0, 1, 0);
 }       
 
-void mqtt_send_rpc_response(const char $response,const char *payload,) {
+void mqtt_send_rpc_response(const char *payload) {
 
     //esp_mqtt_client_handle_t client = esp_mqtt_client_init(NULL);
     esp_mqtt_client_publish(client, topic_up, payload, 0, 1, 0);
