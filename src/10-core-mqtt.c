@@ -51,17 +51,15 @@ void mqtt_send_up_data(const char *payload) {
     esp_mqtt_client_publish(client, topic_up, payload, 0, 1, 0);
 }       
 
-void mqtt_handle_request(const char *request) {
-    if (strncmp(event->topic, topic_rpc, event->topic_len) == 0) {
-    // Handle RPC request
-    //mqtt_send_rpc_response("RPC response payload");
-    ESP_LOGI(TAG, "Received RPC message: %.*s", event->data_len, event->data);
+void mqtt_handle_request(consta char *topic, const char *data) {
+    if (strcmp(topic, topic_rpc) == 0) {
+        // Handle RPC request
+        //mqtt_send_rpc_response("RPC response payload");
+        ESP_LOGI(TAG, "Received RPC message: %.*s", event->data_len, event->data);
     } else if (strncmp(event->topic, topic_down, event->topic_len) == 0) {
-    // Handle downlink message
-    ESP_LOGI(TAG, "Received DOWN message: %.*s", event->data_len, event->data);
+        // Handle downlink message
+        ESP_LOGI(TAG, "Received DOWN message: %.*s", event->data_len, event->data);
     }
- 
-
  
     //esp_mqtt_client_handle_t client = esp_mqtt_client_init(NULL);
     //esp_mqtt_client_publish(client, topic_up, request, 0, 1, 0);
