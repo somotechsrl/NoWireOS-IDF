@@ -15,6 +15,7 @@ void jsonClose();
 void jsonCloseAll();
 void jsonAddValue(int8_t value);
 void jsonAddValue(int16_t value);
+void jsonAddValue(int value);
 void jsonAddValue(int32_t value);
 void jsonAddValue(char value);
 void jsonAddValue(uint8_t value);

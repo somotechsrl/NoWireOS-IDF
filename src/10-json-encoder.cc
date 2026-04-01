@@ -145,6 +145,10 @@ void jsonAddValue(int8_t value) {
 void jsonAddValue(int16_t value) {
   bpAddValue(value==0 ? 'z' : 'W', &value, sizeof(value));
   sprintf(s + strlen(s), "%s%d", jsonComma(), value);
+}// adds an unsigned integer object
+void jsonAddValue(int value) {
+  bpAddValue(value==0 ? 'z' : 'W', &value, sizeof(value));
+  sprintf(s + strlen(s), "%s%d", jsonComma(), value);
 }
 // adds a long unsigned integer object
 void jsonAddValue(int32_t value) {

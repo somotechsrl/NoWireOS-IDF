@@ -29,10 +29,10 @@ typedef struct {
 } cfg_call;
 
 // Modbus Configuration block
-struct {
+typedef struct {
   uint8_t ncalls;
   // max MODBUS_CONFIG  calls... -- see HAL.h
   cfg_call calls[MODBUS_CONFIGS];
-} modbus_cfg;
+} modbus_config;
 
-//extern cfg cfg;
+extern modbus_config modbus_cfg;

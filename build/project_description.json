@@ -1,7 +1,7 @@
 {
     "version":            "1.3",
     "project_name":       "NoWireOS",
-    "project_version":    "1",
+    "project_version":    "2b0531e-dirty",
     "project_path":       "/home/localuser/Documents/PlatformIO/Projects/NoWireOS-IDF",
     "idf_path":           "/home/localuser/.espressif/v6.0/esp-idf",
     "build_dir":          "/home/localuser/Documents/PlatformIO/Projects/NoWireOS-IDF/build",
