@@ -51,7 +51,7 @@ void mqtt_send_up_data(const char *payload) {
     esp_mqtt_client_publish(client, topic_up, payload, 0, 1, 0);
 }       
 
-void mqtt_handle_request(consta char *topic, const char *data) {
+void mqtt_handle_request(const char *topic, const char *data) {
     if (strcmp(topic, topic_rpc) == 0) {
         // Handle RPC request
         //mqtt_send_rpc_response("RPC response payload");
