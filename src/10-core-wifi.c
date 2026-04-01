@@ -1,5 +1,6 @@
 #include "main.h"
 
+char *ipaddr = "notset";
 static const char *TAG = "WIFI_CONFIG";
 static EventGroupHandle_t wifi_event_group;
 static const int WIFI_CONNECTED_BIT = BIT0;
@@ -12,7 +13,8 @@ static void wifi_event_handler(void *arg, esp_event_base_t event_base,
         esp_wifi_connect();
     } else if (event_base == IP_EVENT && event_id == IP_EVENT_STA_GOT_IP) {
         xEventGroupSetBits(wifi_event_group, WIFI_CONNECTED_BIT);
-        ESP_LOGI(TAG, "Connected with IP");
+        ipaddr=ip4addr_ntoa(&((ip_event_got_ip_t *)event_data)->ip_info.ip);
+        ESP_LOGI(TAG, "Connected with IP %s", ipaddr);
     }
 }
 

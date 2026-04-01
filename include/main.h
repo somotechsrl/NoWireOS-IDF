@@ -30,6 +30,7 @@
 #define SEP "|"
 #define RESULT "result"
 
+extern char *ipaddr;
 extern char mac_str[];
 extern esp_chip_info_t chip_info;
 

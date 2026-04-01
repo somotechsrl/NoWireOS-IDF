@@ -2,6 +2,7 @@
 #include "mqtt_client.h"
 #include "10-core-mqtt.h"
 #include "20-rpc-manager.h"
+#include "10-json-encoder.h"
  
 #define TSIZE 128
 #define THEAD "nowireos"
