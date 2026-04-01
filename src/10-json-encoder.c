@@ -218,7 +218,7 @@ void jsonAddObject_uint8_t(const char *oname, uint8_t value) {
 }
 
 // adds a bool object
-void jsonAddObject(const char *oname, bool value) {
+void jsonAddObject_bool(const char *oname, bool value) {
   bpAddValue('o', oname, strlen(oname) + 1);
   bpAddValue('b', &value, sizeof(value));
   sprintf(s + strlen(s), "%s\"%s\":%u", jsonComma(), oname, value);

@@ -27,7 +27,7 @@ void jsonAddArray(const char *oname);
 void jsonAddObject(const char *oname);
 void jsonAddObject_string(const char *oname, const char *value);
 void jsonAddObject_uint8_t(const char *oname, uint8_t value);
-void jsonAddObject(const char *oname, bool value);
+void jsonAddObject_bool(const char *oname, bool value);
 void jsonAddObject_uint16_t(const char *oname, uint16_t value);
 void jsonAddObject_uint32_t(const char *oname, uint32_t value);
 void jsonAddObject_float(const char *oname, float value);
