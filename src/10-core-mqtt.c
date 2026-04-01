@@ -56,9 +56,9 @@ void mqtt_send_up_data(const char *payload) {
 
 void mqtt_handle_received(const char *topic, const char *data) {
     if (strncmp(topic, topic_rpc, strlen(topic_rpc)) == 0) {
-        // Handle RPC request
-        //mqtt_send_rpc_response("RPC response payload");
         ESP_LOGI(TAG, "Received RPC message: %s :: %s", topic,data);
+        // Handle RPC request
+        rpc_manage(data, true);
     } else if (strncmp(topic, topic_down, strlen(topic_down)) == 0) {
         // Handle downlink message
         ESP_LOGI(TAG, "Received DOWN message: %s :: %s",topic, data);

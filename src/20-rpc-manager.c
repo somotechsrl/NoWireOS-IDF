@@ -35,14 +35,15 @@ static int getCommandID(const char *rpcmd) {
 void rpcManage(const char *payload, bool sync) {
 
   const char *OK = "OK";
-  const char *KO = String(F("KO"));
-  const char *SEP = "|"
-  const char RESULT = "result";
+  const char *KO = "KO";
+  const char *SEP = "|";
+  const char *RESULT = "result";
   
   ESP_LOGI(TAG, "Received: %s", payload);
 
   // extracts ID and Command
-  char *r = strtok(payload,"|");
+  char *p=strdup(payload);
+  char *requestid = strtok(p,"|");
   char *rpccommand = strtok(NULL,"|");
   char *rpcparams = strtok(NULL,"|");
 
@@ -50,7 +51,7 @@ void rpcManage(const char *payload, bool sync) {
   snprintf(respid, sizeof(respid), "R%s", requestid);
 
   // sets rpcid
-  int cmdid = getCommandID(rpccommand, RPC_cmd);
+  int cmdid = getCommandID(rpccommand);
 
   ESP_LOGI(TAG, "ID: %s Command: %s (ID: %d)", respid, rpccommand, cmdid);
 
@@ -61,7 +62,8 @@ void rpcManage(const char *payload, bool sync) {
   jsonAddObject(RESULT);
   
   // rpcStatus default is 'OK'
-  char *rpcStatus = OK;
+  char *rpcStatus = (char *)OK;
+  char result[BUFSIZE] = "Executed successfully";
 
   switch (cmdid) {
     case CFG_Debug:
@@ -80,7 +82,7 @@ void rpcManage(const char *payload, bool sync) {
       //  debug(DEBUG_RPC,String("Timestep too low, forced to ")+MINTSTEP);
       //  timestep = MINTSTEP*1000;
       //}
-      jsonAddObject_uint32_t("value", (uint32_t)timestep/1000);
+      //jsonAddObject_uint32_t("value", (uint32_t)timestep/1000);
       break;
 
     // ************ RPC group Commands
@@ -91,11 +93,8 @@ void rpcManage(const char *payload, bool sync) {
       
     case RPC_List:
       jsonAddArray("RPC.List");
-      for (int i = 0; RPC_cmd[i] != ""; i++) {
-        c = RPC_cmd[i];
-        c.replace("|", " <param>");
-        jsonAddValue(c);
-
+      for (int i = 0; i<sizeof(RPC_cmd);i++) {
+        jsonAddValue_string(RPC_cmd[i]);
       }
       jsonClose();
       break;
@@ -124,8 +123,8 @@ void rpcManage(const char *payload, bool sync) {
     // ************ Unknow management
     default:
       rpcStatus = KO;
-      jsonErrorNotImplemented();
-
+      snprintf(result, sizeof(result), "%s(%s): %s", rpccommand,rpcparams, "not implemented");
+ 
   }
 
   // Closes response Buffer and sets response status
@@ -135,7 +134,7 @@ void rpcManage(const char *payload, bool sync) {
 
   ESP_LOGI(TAG, "MODE: %s", sync ? "SYNC:" : "ASYNC:");
   ESP_LOGI(TAG, "%s", jsonGetBuffer());
-  if(sync) mqttRpcUp(rpcid,sync);
+  //if(sync) mqttRpcUp(rpcid,sync);
   jsonClear();
   
 }
