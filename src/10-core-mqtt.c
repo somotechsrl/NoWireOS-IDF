@@ -45,14 +45,15 @@ static void mqtt_event_handler(void *handler_args, esp_event_base_t base, int32_
     }
 }
 
-void mqtt_send_up(const char *payload) {
-    //esp_mqtt_client_handle_t client = esp_mqtt_client_init(NULL);
+void mqtt_send_up_data(const char *payload) {
+    // esp_mqtt_client_handle_t client = esp_mqtt_client_init(NULL);
     esp_mqtt_client_publish(client, topic_up, payload, 0, 1, 0);
 }       
 
-void mqtt_send_rpc(const char *payload) {
+void mqtt_send_rpc_response(const char $response,const char *payload,) {
+
     //esp_mqtt_client_handle_t client = esp_mqtt_client_init(NULL);
-    esp_mqtt_client_publish(client, topic_rpc, payload, 0, 1, 0);
+    esp_mqtt_client_publish(client, topic_up, payload, 0, 1, 0);
 }       
 
 void mqtt_init(void) {
@@ -63,7 +64,7 @@ void mqtt_init(void) {
     snprintf(topic_down, TSIZE, "%s/%s/%s/down", THEAD,BOARDID, mac_str);
 
 
-    const esp_mqtt_client_config_t mqtt_cfg = {
+    static const esp_mqtt_client_config_t mqtt_cfg = {
         .broker.address.uri = "mqtt://rpc.somotech.it:2983",
         .broker.verification.certificate = NULL,
 

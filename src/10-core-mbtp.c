@@ -214,22 +214,15 @@ static void modbus_client_task(void *pvParameters) {
 
         int sock = modbus_tcp_connect(server_host, server_port);
         if (sock >= 0) {
-            uint16_t *response;
-            response=modbus_read_json(sock, 0x03, 0x1000, MODBUS_NUMBER_OF_REGISTERS);
-            /*
-            if ((response=modbus_read_json(sock, 0x03, 0x1000, MODBUS_NUMBER_OF_REGISTERS))!=NULL) {
-                for (int i = 0; i < MODBUS_NUMBER_OF_REGISTERS; ++i) {
-                    //ESP_LOGI(TAG, "holding register[%d] = 0x%04X", i, response[i]);
-                }
-            }
-            */
+            modbus_read_json(sock, 0x03, 0x1000, MODBUS_NUMBER_OF_REGISTERS);
             close(sock);
         }
 
         jsonCloseAll();        
+
+        // logs json, and base 64 encrypted json
         ESP_LOGI(TAG,"%s",jsonGetBuffer());
         ESP_LOGI(TAG,"%s",jsonGetBase64());
-
 
         mqtt_send_up(jsonGetBase64());
         vTaskDelay(pdMS_TO_TICKS(MODBUS_TCP_RETRY_DELAY_MS));
