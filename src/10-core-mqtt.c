@@ -55,12 +55,12 @@ void mqtt_send_up_data(const char *payload) {
     esp_mqtt_client_publish(client, topic_up, payload, 0, 1, 0);
 }
 
-void mqtt_send_rpc_response(const char *respid,const char *payload) {
+void mqtt_send_rpc_response(const char *respid) {
     // esp_mqtt_client_handle_t client = esp_mqtt_client_init(NULL);
     char topic_resp[TSIZE];
     snprintf(topic_resp, TSIZE, "%s/%s/%s/rpc/%s", THEAD, BOARDID, mac_str, respid);
-    ESP_LOGI(TAG, "Sending RPC Response: %s :: %s", topic_resp, payload);
-    esp_mqtt_client_publish(client, topic_resp, payload, 0, 1, 0);
+    ESP_LOGI(TAG, "Sending RPC Response: %s :: %s", topic_resp, jsonGetBuffer());
+    esp_mqtt_client_publish(client, topic_resp, jsonGetBase64(), 0, 1, 0);
 }       
 
 void mqtt_handle_received(const char *topic, const char *data) {

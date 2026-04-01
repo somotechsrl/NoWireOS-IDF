@@ -3,6 +3,7 @@
 #include "30-rpc-cmd.h"
 #include "30-rpc-ids.h"
 #include "10-json-encoder.h"
+#include "10-core-mqtt.h"
 
 /*******************************************************************************
    RPC Parser/Executor module
