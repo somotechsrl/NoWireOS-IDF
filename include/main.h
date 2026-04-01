@@ -17,6 +17,7 @@
 #include "nvs_flash.h"
 #include "esp_http_server.h"
 #include <esp_chip_info.h>
+#include "revision.h"
 
 //#include "10-json-encoder.hpp"
 //#include "00-prototypes.h"
@@ -30,7 +31,7 @@
 #define SEP "|"
 #define RESULT "result"
 
-extern char *ipaddr;
+extern char ipaddr[16];
 extern char mac_str[];
 extern esp_chip_info_t chip_info;
 

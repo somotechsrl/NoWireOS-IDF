@@ -5,6 +5,7 @@
 #include "10-json-encoder.h"
 #include "10-core-mqtt.h"
 #include "10-json-encoder.h"
+#include "20-rpcfunctions.h"
 
 /*******************************************************************************
    RPC Parser/Executor module
@@ -103,10 +104,8 @@ void rpcManage(const char *payload, bool sync) {
 
     // ************ System Related Commands
     case Sys_GetInfo:
-      //sysGetInfo();
-      break;
     case Sys_GetStatus:
-      //sysGetStatus();
+      sysGetInfo();
       break;
     case Sys_Reboot:
       //enableReboot();

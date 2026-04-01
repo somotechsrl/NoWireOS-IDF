@@ -6,11 +6,11 @@
 void sysGetInfo(void) {
 
   //jsonAddObject("hw", String(BOARDID).c_str());
-  //jsonAddObject("sn", String(uuid).c_str());
+  jsonAddObject_string("sn", );
   //jsonAddObject("fw", REVISION);
-  jsonAddObject("mac", mac_str);
+  jsonAddObject_string("mac", mac_str);
   //jsonAddObject("up", (uint32_t)(millis() / 1000));
-  jsonAddObject("ip", ipaddr);
+  jsonAddObject_string("ip", ipaddr);
   //String temp = String((temprature_sens_read() - 32) / 1.8);
   //jsonAddObject("te", temp.c_str());
   //jsonAddObject("mf",ESP.getFreeHeap());

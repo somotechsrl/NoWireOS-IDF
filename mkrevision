@@ -57,6 +57,7 @@ git commit -m "$rdescr" -a
 git push
 
 cat > include/revision.h << EOT
-#define REV_DATE \"$(git log -1 --format=%cd | tail -n 1)\"" 
+#define REV_DATE "$(git log -1 --format=%cd | tail -n 1)" 
+#define REV_CURR "$(git rev-parse --short HEAD)"
 EOT
 
