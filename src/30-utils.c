@@ -4,7 +4,7 @@
 #define BLINK_DELAY_MS 500L
 bool led_blink_enabled = true;
 
-static void led_blink(void) {  
+static void led_blink(void *pvParameters) {  
     
     // Configure the GPIO pin
     gpio_reset_pin(BLINK_GPIO);
@@ -27,6 +27,7 @@ static void led_blink(void) {
         //printf("LED OFF\n");
         gpio_set_level(BLINK_GPIO, 0);
         vTaskDelay(BLINK_DELAY_MS / portTICK_PERIOD_MS); // Delay 1 second
+        }
     }
 
 void led_blink_init(void) {
