@@ -71,13 +71,15 @@ void rpcManage(const char *payload, bool sync) {
     case CFG_Debug:
       //setDebugMode(bitname.toInt());
       break;
-     case CFG_Leds_Enable:
-      //ledEnable();
+    case CFG_Leds_Enable:
+      led_blink_enabled = true;
+      jsonAddObject_string("value","HB LED Enabled");
       break;
     case CFG_Leds_Disable:
-      //ledDisable();
-      break;
-    case CFG_Timestep:
+      led_blink_enabled = false;
+      jsonAddObject_string("value","HB LED Disabled");
+    break;
+       case CFG_Timestep:
       // timestep is received in s, converted in ms
       //if (bitname != "") timestep = bitname.toInt()*1000;
       //if (timestep < MINTSTEP*1000) {
@@ -120,7 +122,7 @@ void rpcManage(const char *payload, bool sync) {
     case CFG_Modbus_AddCall:
       //addModbusCall(params));
       break;
-
+  
     // ************ Unknow management
     default:
       rpcStatus = KO;
