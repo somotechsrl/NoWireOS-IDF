@@ -7,8 +7,22 @@
 #include "10-json-encoder.h"
 #include "10-core-mqtt.h"
 
-modbus_config modbus_cfg;
+// Modbus configuration entry
+typedef struct {
+  char tag[32];
+  char ad[32];
+  uint16_t rs;
+  uint8_t fn, rn;
+} cfg_call;
 
+// Modbus Configuration block
+typedef struct {
+  uint8_t ncalls;
+  // max MODBUS_CONFIG  calls... -- see HAL.h
+  cfg_call calls[MODBUS_CONFIGS];
+} modbus_config;
+
+static modbus_config modbus_cfg;
 static const char *TAG = "MODBUS_CLIENT";
 
 #define MODBUS_TCP_DEFAULT_HOST "192.168.43.169"

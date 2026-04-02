@@ -37,20 +37,3 @@ extern char ipaddr[16];
 extern char mac_str[20];
 extern char serial_str[16];
 extern esp_chip_info_t chip_info;
-
-// Modbus configuration entry
-typedef struct {
-  char tag[32];
-  char ad[32];
-  uint16_t rs;
-  uint8_t fn, rn;
-} cfg_call;
-
-// Modbus Configuration block
-typedef struct {
-  uint8_t ncalls;
-  // max MODBUS_CONFIG  calls... -- see HAL.h
-  cfg_call calls[MODBUS_CONFIGS];
-} modbus_config;
-
-extern modbus_config modbus_cfg;

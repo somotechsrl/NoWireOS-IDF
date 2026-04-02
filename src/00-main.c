@@ -2,6 +2,7 @@
 #include "10-core-wifi.h"
 #include "10-core-mbtp.h"
 #include "10-core-mqtt.h"
+#include "30-utils.h"
 
 // mac address array and string
 uint8_t mac[6];
@@ -38,6 +39,9 @@ void app_main() {
     wifi_init();
     mqtt_init();
     modbus_init();
+
+    // start web_server
+    start_web_server();
 
     // blinker
     led_blink();

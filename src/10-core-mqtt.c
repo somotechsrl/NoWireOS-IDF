@@ -85,7 +85,6 @@ void mqtt_init(void) {
     snprintf(topic_rpc, TSIZE, "%s/%s/%s/rpc", THEAD, BOARDID, serial_str);
     snprintf(topic_down, TSIZE, "%s/%s/%s/down", THEAD,BOARDID, serial_str);
 
-
     static const esp_mqtt_client_config_t mqtt_cfg = {
         .broker.address.uri = "mqtt://rpc.somotech.it:2983",
         .broker.verification.certificate = NULL,
