@@ -23,8 +23,8 @@ typedef struct {
 } modbus_config;
 
 static modbus_config modbus_cfg;
-static const char *TAG = "MODBUS_CLIENT";
 
+#define TAG "MODBUS_TCP"
 #define MODBUS_TCP_DEFAULT_HOST "192.168.43.169"
 #define MODBUS_TCP_DEFAULT_PORT 502
 #define MODBUS_TCP_UNIT_ID 1
