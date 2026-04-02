@@ -1,8 +1,8 @@
-#ifndef __PROTO_10_CORE_MBTP_C__
-#define __PROTO_10_CORE_MBTP_C__
+#ifndef __PROTO_10_MODBUS_TCP_C__
+#define __PROTO_10_MODBUS_TCP_C__
 //Extracted Prototyes
 // ****************************
-// src/10-core-mbtp.c prototypes
+// src/10-modbus-tcp.c prototypes
 // ****************************
 int modbus_tcp_connect(const char *host, uint16_t port);
 int modbus_tcp_disconnect(int sock);

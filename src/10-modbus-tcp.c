@@ -218,6 +218,7 @@ static void modbus_client_task(void *pvParameters) {
     const char *server_host = MODBUS_TCP_DEFAULT_HOST;
     const uint16_t server_port = MODBUS_TCP_DEFAULT_PORT;
 
+    // replace loop with connector loop RTU/TCP
     while (true) {
 
         jsonInit();
