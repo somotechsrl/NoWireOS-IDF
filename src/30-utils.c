@@ -30,5 +30,5 @@ static void led_blink(void) {
     }
 
 void led_blink_init(void) {
-    xTaskCreate(led_bink, "led_blink", 4096, NULL, 5, NULL);
+    xTaskCreate(led_blink, "led_blink", 4096, NULL, 5, NULL);
     }
