@@ -4,5 +4,5 @@
 // ****************************
 // src/30-utils.c prototypes
 // ****************************
-void blink_init(void);
+void led_blink_init(void);
 #endif

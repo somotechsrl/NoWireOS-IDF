@@ -29,7 +29,7 @@ static void led_blink(void) {
         vTaskDelay(BLINK_DELAY_MS / portTICK_PERIOD_MS); // Delay 1 second
     }
 
-void blink_init(void) {
+void led_blink_init(void) {
     xTaskCreate(led_bink, "led_blink", 4096, NULL, 5, NULL);
 }
 

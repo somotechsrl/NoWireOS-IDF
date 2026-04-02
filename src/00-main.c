@@ -41,10 +41,10 @@ void app_main() {
     modbus_init();
 
     // start web_server
-    start_web_server();
+    //start_web_server();
 
     // blinker
-    led_blink();
+    led_blink_init();
     
  
 }
