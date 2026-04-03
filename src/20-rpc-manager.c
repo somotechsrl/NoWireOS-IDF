@@ -6,6 +6,7 @@
 #include "10-core-mqtt.h"
 #include "10-json-encoder.h"
 #include "20-rpc_functs.h"
+#include "10-modbus-cfg.h"
 
 /*******************************************************************************
    RPC Parser/Executor module
@@ -120,7 +121,7 @@ void rpcManage(const char *payload, bool sync) {
       break;
 
     case CFG_Modbus_AddCall:
-      //addModbusCall(params));
+      addModbusCall(params));
       break;
   
     // ************ Unknow management

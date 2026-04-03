@@ -204,7 +204,7 @@ void jsonAddValue_string(const char *value) {
 }
 // adds a string
 void jsonAddValue_printf(const char *format, ...) {
-  char out[BUFSIZE];
+  char out[BUFTINY];
   va_list args;
   va_start(args, format);
   vsprintf(out, format, args);
@@ -233,7 +233,7 @@ void jsonAddObject_string(const char *oname, const char *value) {
 
 // adds a string data object
 void jsonAddObject_printf(const char *oname, const char *format, ...) {
-  char out[BUFSIZE];
+  char out[BUFTINY];
   va_list args;
   va_start(args, format);
   vsprintf(out, format, args);

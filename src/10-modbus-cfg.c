@@ -10,6 +10,21 @@
 #define TAG "MODBUS_CFG"
 static modbus_config modbus_cfg;
 
+void modbusAddCall(const char *params) {
+  // Expected format: "tag,ad,rs,fn,rn"
+  char tag[32], ad[32];
+  uint16_t rs;
+  uint8_t fn, rn;
+
+  if (sscanf(params, "%31[^,],%31[^,],%hu,%hhu,%hhu", tag, ad, &rs, &fn, &rn) != 5) {
+    ESP_LOGW(TAG, "Invalid parameters for Modbus call: %s", params);
+    jsonAddObject_printf("value", "Invalid parameters for Modbus call: %s", params);
+    return;
+  }
+
+  add_modbus_cfg_call(tag, ad, rs, fn, rn);
+}
+
 void add_modbus_cfg_call(const char *tag, const char *ad, uint16_t rs, uint8_t fn, uint8_t rn) {
   if (modbus_cfg.ncalls >= MODBUS_CONFIGS) {
     ESP_LOGW(TAG, "Maximum number of Modbus calls reached");
@@ -21,7 +36,7 @@ void add_modbus_cfg_call(const char *tag, const char *ad, uint16_t rs, uint8_t f
   for (uint8_t i = 0; i < modbus_cfg.ncalls; i++) {
     if (strcmp(modbus_cfg.calls[i].tag, tag) == 0 && strcmp(modbus_cfg.calls[i].ad, ad) == 0) {
       ESP_LOGW(TAG, "Modbus call with tag '%s' and address '%s' already exists", tag, ad);
-      jsonAddObject_string("value", "Modbus call with tag '%s' and address '%s' already exists", tag, ad);
+      jsonAddObject_printf("value", "Modbus call with tag '%s' and address '%s' already exists", tag, ad);
       return;
     }
   }
