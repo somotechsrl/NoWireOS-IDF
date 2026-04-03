@@ -121,7 +121,7 @@ void rpcManage(const char *payload, bool sync) {
       break;
 
     case CFG_Modbus_AddCall:
-      addModbusCall(params));
+      addModbusCall(params);
       break;
   
     // ************ Unknow management

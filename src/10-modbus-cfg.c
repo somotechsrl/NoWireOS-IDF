@@ -6,11 +6,12 @@
 #include <unistd.h>
 #include "10-json-encoder.h"
 #include "10-core-mqtt.h"
+#include "10-modbus-cfg.h"
 
 #define TAG "MODBUS_CFG"
 static modbus_config modbus_cfg;
 
-void modbusAddCall(const char *params) {
+void addModbusCall(const char *params) {
   // Expected format: "tag,ad,rs,fn,rn"
   char tag[32], ad[32];
   uint16_t rs;
