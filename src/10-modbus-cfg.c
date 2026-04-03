@@ -12,18 +12,18 @@
 static modbus_config modbus_cfg;
 
 void addModbusCall(const char *params) {
-  // Expected format: "tag,ad,rs,fn,rn"
+  // expects params in format: tag,ad,fn,rs,rn
   char tag[32], ad[32];
-  uint16_t rs;
   uint8_t fn, rn;
+  uint16_t rs;
 
-  if (sscanf(params, "%31[^;];%31[^;];%hu;%hhu;%hhu", tag, ad, &rs, &fn, &rn) != 5) {
+  if (sscanf(params, "%31[^,],%31[^,],%hhu,%hu,%hhu", tag, ad, &fn, &rs, &rn) != 5) {
     ESP_LOGW(TAG, "Invalid parameters for Modbus call: %s", params);
     jsonAddObject_printf("value", "Invalid parameters for Modbus call: %s", params);
     return;
   }
 
-  add_modbus_cfg_call(tag, ad, rs, fn, rn);
+  add_modbus_cfg_call(tag, ad, fn, rs, rn);
 }
 
 void add_modbus_cfg_call(const char *tag, const char *ad, uint8_t fn, uint16_t rs, uint8_t rn) {
