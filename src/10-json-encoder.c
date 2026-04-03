@@ -202,6 +202,15 @@ void jsonAddValue_string(const char *value) {
   bpAddValue(l ? 's' : 'n', value, strlen(value) + 1);
   sprintf(s + strlen(s), "%s\"%s\"", jsonComma(), value);
 }
+// adds a string
+void jsonAddValue_printf(const char *format, ...) {
+  char out[BUFSIZE];
+  va_list args;
+  va_start(args, format);
+  vsprintf(out, format, args);
+  va_end(args);
+  sprintf(s + strlen(s), "%s\"%s\"", jsonComma(),out);
+}
 
 // adds an array header
 void jsonAddArray(const char *oname) {
@@ -220,6 +229,16 @@ void jsonAddObject_string(const char *oname, const char *value) {
   bpAddValue('o', oname, strlen(oname) + 1);
   bpAddValue('s', value, strlen(value) + 1);
   sprintf(s + strlen(s), "%s\"%s\":\"%s\"", jsonComma(), oname, value);
+}
+
+// adds a string data object
+void jsonAddObject_printf(const char *oname, const char *format, ...) {
+  char out[BUFSIZE];
+  va_list args;
+  va_start(args, format);
+  vsprintf(out, format, args);
+  va_end(args);
+  sprintf(s + strlen(s), "%s\"%s\":\"%s\"", jsonComma(), oname, out);
 }
 
 // adds an unsigned short object

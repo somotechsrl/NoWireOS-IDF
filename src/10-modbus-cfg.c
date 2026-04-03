@@ -7,21 +7,7 @@
 #include "10-json-encoder.h"
 #include "10-core-mqtt.h"
 
-// Modbus configuration entry
-typedef struct {
-  char tag[32];
-  char ad[32];
-  uint16_t rs;
-  uint8_t fn, rn;
-} cfg_call;
-
-// Modbus Configuration block
-typedef struct {
-  uint8_t ncalls;
-  // max MODBUS_CONFIG  calls... -- see HAL.h
-  cfg_call calls[MODBUS_CONFIGS];
-} modbus_config;
-
+#define TAG "MODBUS_CFG"
 static modbus_config modbus_cfg;
 
 void add_modbus_cfg_call(const char *tag, const char *ad, uint16_t rs, uint8_t fn, uint8_t rn) {

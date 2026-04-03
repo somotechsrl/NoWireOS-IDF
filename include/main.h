@@ -26,7 +26,6 @@
 
 #define BUFSIZE 1024
 #define BUFTINY 128
-#define MODBUS_CONFIGS 50
 
 #define OK "OK"
 #define KO "KO"
@@ -39,3 +38,19 @@ extern char serial_str[16];
 extern esp_chip_info_t chip_info;
 
 extern bool led_blink_enabled;
+
+// Modbus configuration entry
+#define MODBUS_CONFIGS 100
+typedef struct {
+  char tag[32];
+  char ad[32];
+  uint16_t rs;
+  uint8_t fn, rn;
+} cfg_call;
+
+// Modbus Configuration block
+typedef struct {
+  uint8_t ncalls;
+  // max MODBUS_CONFIG  calls... -- see HAL.h
+  cfg_call calls[MODBUS_CONFIGS];
+} modbus_config;
