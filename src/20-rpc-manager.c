@@ -14,19 +14,14 @@
 
 
 #define TAG "RPC"
-
 bool trigger = false;
-static char rpcmsg[256];
 
-static void rpcMessage(const char* msg) {
-  jsonAddObject_string("message", msg);
-}
 
 // retrives command sequence if for switch/case
 static int getCommandID(const char *rpcmd) {
   int size=sizeof(RPC_cmd)/sizeof(RPC_cmd[0]);
   for (int i = 0; i<size;i++) {
-    if (!strcmp(rpcmd, RPC_cmd[i])) return i;
+    if (!strncmp(rpcmd, RPC_cmd[i], strlen(RPC_cmd[i]))) return i;
   }
   return -1;
 }
