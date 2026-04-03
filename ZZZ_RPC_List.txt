@@ -1,11 +1,11 @@
 CFG.Leds.Enable
 CFG.Leds.Disable
 
-CFG.Debug|
+CFG.Debug
 
-CFG.Modbus.AddCall|
+CFG.Modbus.AddCall
 
-CFG.Timestep|
+CFG.Timestep
 
 RPC.List
 RPC.Trigger
