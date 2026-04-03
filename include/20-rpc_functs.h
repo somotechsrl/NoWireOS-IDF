@@ -1,8 +1,8 @@
-#ifndef __PROTO_20_RPCFUNCTIONS_C__
-#define __PROTO_20_RPCFUNCTIONS_C__
+#ifndef __PROTO_20_RPC_FUNCTS_C__
+#define __PROTO_20_RPC_FUNCTS_C__
 //Extracted Prototyes
 // ****************************
-// src/20-rpcfunctions.c prototypes
+// src/20-rpc_functs.c prototypes
 // ****************************
 void sysGetInfo(void);
 #endif

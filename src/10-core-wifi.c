@@ -15,6 +15,7 @@ static void wifi_event_handler(void *arg, esp_event_base_t event_base,
         xEventGroupSetBits(wifi_event_group, WIFI_CONNECTED_BIT);
         ip_event_got_ip_t* event = (ip_event_got_ip_t*) event_data;
         ESP_LOGI(TAG, "Got IP:"IPSTR, IP2STR(&event->ip_info.ip));
+        snprintf(ipaddr, sizeof(ipaddr), IPSTR, IP2STR(&event->ip_info.ip));
 
     }
 }
