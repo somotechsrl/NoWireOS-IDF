@@ -22,11 +22,6 @@ static void rpcMessage(const char* msg) {
   jsonAddObject_string("message", msg);
 }
 
-static void rpcWrongParams(const char *bitname, int res) {
-  snprintf(rpcmsg, sizeof(rpcmsg), "Wrong Parameters: %s -- [%d]", bitname, res);
-  rpcMessage(rpcmsg);
-}
-
 // retrives command sequence if for switch/case
 static int getCommandID(const char *rpcmd) {
   int size=sizeof(RPC_cmd)/sizeof(RPC_cmd[0]);
@@ -121,7 +116,7 @@ void rpcManage(const char *payload, bool sync) {
       break;
 
     case CFG_Modbus_AddCall:
-      addModbusCall(params);
+      addModbusCall(rpc_params);
       break;
   
     // ************ Unknow management

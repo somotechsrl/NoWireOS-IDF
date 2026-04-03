@@ -105,7 +105,7 @@ const char *jsonGetBase64() {
   size_t olen;
   unsigned char *jb;
   static unsigned char b64buffer[BUFSIZE];
-  jb=(const unsigned char *)jsonGetCompressedBuffer();
+  jb=(unsigned char *)jsonGetCompressedBuffer();
   for(int i=0;i<rp-r;i++) jb[i]=r[i] ^ XKEY;
   mbedtls_base64_encode(b64buffer, sizeof(b64buffer), &olen, jb, rp - r);
   return (char *)b64buffer;
