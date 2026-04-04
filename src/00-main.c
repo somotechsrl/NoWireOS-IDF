@@ -2,6 +2,7 @@
 #include "10-core-wifi.h"
 #include "10-core-mqtt.h"
 #include "10-modbus-tcp.h"
+#include "10-modbus-rtu.h"
 #include "30-utils.h"
 
 
@@ -17,7 +18,7 @@ void app_main() {
     wifi_init();
     mqtt_init();
     modbus_tcp_init();
-    modbus_rtu_init();
+    //modbus_rtu_init();
 
 
     // start web_server

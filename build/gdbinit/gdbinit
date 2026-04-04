@@ -1,2 +1,2 @@
-source /home/localuser/Documents/PlatformIO/Projects/NoWireOS-IDF/build/gdbinit/symbols
-source /home/localuser/Documents/PlatformIO/Projects/NoWireOS-IDF/build/gdbinit/connect
+source /home/localuser/Documents/PlatFormIO/Projects/NoWireOS-IDF/build/gdbinit/symbols
+source /home/localuser/Documents/PlatFormIO/Projects/NoWireOS-IDF/build/gdbinit/connect

@@ -1,9 +1,9 @@
-set(CMAKE_HOST_SYSTEM "Linux-6.8.0-106-lowlatency")
+set(CMAKE_HOST_SYSTEM "Linux-6.8.0-78-lowlatency")
 set(CMAKE_HOST_SYSTEM_NAME "Linux")
-set(CMAKE_HOST_SYSTEM_VERSION "6.8.0-106-lowlatency")
+set(CMAKE_HOST_SYSTEM_VERSION "6.8.0-78-lowlatency")
 set(CMAKE_HOST_SYSTEM_PROCESSOR "x86_64")
 
-include("/home/localuser/Documents/PlatformIO/Projects/NoWireOS-IDF/build/toolchain/toolchain-esp32.cmake")
+include("/home/localuser/Documents/PlatFormIO/Projects/NoWireOS-IDF/build/toolchain/toolchain-esp32.cmake")
 
 set(CMAKE_SYSTEM "Generic")
 set(CMAKE_SYSTEM_NAME "Generic")

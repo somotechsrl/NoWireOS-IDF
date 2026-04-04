@@ -2,34 +2,34 @@
 	"sources" : 
 	[
 		{
-			"file" : "/home/localuser/Documents/PlatformIO/Projects/NoWireOS-IDF/build/CMakeFiles/bootloader"
+			"file" : "/home/localuser/Documents/PlatFormIO/Projects/NoWireOS-IDF/build/CMakeFiles/bootloader"
 		},
 		{
-			"file" : "/home/localuser/Documents/PlatformIO/Projects/NoWireOS-IDF/build/CMakeFiles/bootloader.rule"
+			"file" : "/home/localuser/Documents/PlatFormIO/Projects/NoWireOS-IDF/build/CMakeFiles/bootloader.rule"
 		},
 		{
-			"file" : "/home/localuser/Documents/PlatformIO/Projects/NoWireOS-IDF/build/CMakeFiles/bootloader-complete.rule"
+			"file" : "/home/localuser/Documents/PlatFormIO/Projects/NoWireOS-IDF/build/CMakeFiles/bootloader-complete.rule"
 		},
 		{
-			"file" : "/home/localuser/Documents/PlatformIO/Projects/NoWireOS-IDF/build/bootloader-prefix/src/bootloader-stamp/bootloader-build.rule"
+			"file" : "/home/localuser/Documents/PlatFormIO/Projects/NoWireOS-IDF/build/bootloader-prefix/src/bootloader-stamp/bootloader-build.rule"
 		},
 		{
-			"file" : "/home/localuser/Documents/PlatformIO/Projects/NoWireOS-IDF/build/bootloader-prefix/src/bootloader-stamp/bootloader-configure.rule"
+			"file" : "/home/localuser/Documents/PlatFormIO/Projects/NoWireOS-IDF/build/bootloader-prefix/src/bootloader-stamp/bootloader-configure.rule"
 		},
 		{
-			"file" : "/home/localuser/Documents/PlatformIO/Projects/NoWireOS-IDF/build/bootloader-prefix/src/bootloader-stamp/bootloader-download.rule"
+			"file" : "/home/localuser/Documents/PlatFormIO/Projects/NoWireOS-IDF/build/bootloader-prefix/src/bootloader-stamp/bootloader-download.rule"
 		},
 		{
-			"file" : "/home/localuser/Documents/PlatformIO/Projects/NoWireOS-IDF/build/bootloader-prefix/src/bootloader-stamp/bootloader-install.rule"
+			"file" : "/home/localuser/Documents/PlatFormIO/Projects/NoWireOS-IDF/build/bootloader-prefix/src/bootloader-stamp/bootloader-install.rule"
 		},
 		{
-			"file" : "/home/localuser/Documents/PlatformIO/Projects/NoWireOS-IDF/build/bootloader-prefix/src/bootloader-stamp/bootloader-mkdir.rule"
+			"file" : "/home/localuser/Documents/PlatFormIO/Projects/NoWireOS-IDF/build/bootloader-prefix/src/bootloader-stamp/bootloader-mkdir.rule"
 		},
 		{
-			"file" : "/home/localuser/Documents/PlatformIO/Projects/NoWireOS-IDF/build/bootloader-prefix/src/bootloader-stamp/bootloader-patch.rule"
+			"file" : "/home/localuser/Documents/PlatFormIO/Projects/NoWireOS-IDF/build/bootloader-prefix/src/bootloader-stamp/bootloader-patch.rule"
 		},
 		{
-			"file" : "/home/localuser/Documents/PlatformIO/Projects/NoWireOS-IDF/build/bootloader-prefix/src/bootloader-stamp/bootloader-update.rule"
+			"file" : "/home/localuser/Documents/PlatFormIO/Projects/NoWireOS-IDF/build/bootloader-prefix/src/bootloader-stamp/bootloader-update.rule"
 		}
 	],
 	"target" : 

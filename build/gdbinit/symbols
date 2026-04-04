@@ -18,8 +18,8 @@ end
 
 # Load bootloader symbols
 set confirm off
-    add-symbol-file /home/localuser/Documents/PlatformIO/Projects/NoWireOS-IDF/build/bootloader/bootloader.elf
+    add-symbol-file /home/localuser/Documents/PlatFormIO/Projects/NoWireOS-IDF/build/bootloader/bootloader.elf
 set confirm on
 
 # Load application symbols
-file /home/localuser/Documents/PlatformIO/Projects/NoWireOS-IDF/build/NoWireOS.elf
+file /home/localuser/Documents/PlatFormIO/Projects/NoWireOS-IDF/build/NoWireOS.elf
