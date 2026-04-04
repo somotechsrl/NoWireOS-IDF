@@ -156,7 +156,7 @@ static uint16_t *modbus_tcp_read(int sock, uint8_t unit_id, uint8_t func, uint16
 
 
 // Not really used but can be used for future expansion to other function codes
-uint16_t *modbus_tcp_read_coils(int sock, uint8_t unit_id, uint16_t start_address, uint16_t quantity) {
+uint16_t *modbus_tcp_read_coils(int sock, uint8_t unit_id,uint16_t start_address, uint16_t quantity) {
     return modbus_tcp_read(sock, unit_id, 0x01, start_address, quantity);
 }
 uint16_t *modbus_tcp_read_discrete_inputs(int sock, uint8_t unit_id, uint16_t start_address, uint16_t quantity) {
@@ -182,7 +182,7 @@ uint16_t *modbus_tcp_read_json(int sock,uint8_t unit_id, uint8_t func, uint16_t 
     jsonAddValue_uint16_t(0); // will be replaced by query result
     jsonAddValue_uint16_t(start_address);
     
-    if ((response=modbus_tcp_read(sock, unit_id , start_address, quantity)) != NULL) {
+    if ((response=modbus_tcp_read(sock, unit_id , func, start_address, quantity)) != NULL) {
     for (uint16_t i = 0; i < quantity; ++i) {
         //ESP_LOGI(TAG, "holding register[%d] = 0x%04X", i, response[i]);
         jsonAddValue_uint16_t(response[i]);

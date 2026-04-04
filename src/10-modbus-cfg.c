@@ -109,22 +109,24 @@ static void modbus_client_task(void *pvParameters) {
                 if (sock >= 0) {
                     modbus_tcp_read_json(sock, server_unit_id, call->fn, call->rs, call->rn);
                     modbus_tcp_disconnect(sock);
+                    close(sock);
                 } else {
                     ESP_LOGW(TAG, "Failed to connect to Modbus server for call: %s", call->tag);
                 }
-                close(sock);
-                continue;
+              }
 
-            // RTU Serial call - not implemented yet, placeholder for future expansion
-            } if(strcmp(server_type, "rtu") == 0) {
+            // RTU Serial call - not implemented yet, placeholder for future expansion 
+            else if(strcmp(server_type, "rtu") == 0) {
                 // RTU client call - not implemented yet, placeholder for future expansion
                 ESP_LOGW(TAG, "Modbus RTU client not implemented yet for call: %s", call->tag);
                 continue; 
-            }
+              } 
 
-            ESP_LOGW(TAG, "Unsupported Modbus call address: %s", call->ad);
+            // Unknown server type
+            else {
+              ESP_LOGW(TAG, "Unsupported Modbus call address: %s", call->ad);
             }
-        }
+          }
 
         jsonCloseAll();        
 
@@ -135,7 +137,8 @@ static void modbus_client_task(void *pvParameters) {
         mqtt_send_up_data(jsonGetBase64());
         vTaskDelay(pdMS_TO_TICKS(MODBUS_TCP_RETRY_DELAY_MS));
     }
-}
+  }
+
 
 void modbus_init(void) {
     xTaskCreate(modbus_client_task, "modbus_client", 4096, NULL, 5, NULL);
