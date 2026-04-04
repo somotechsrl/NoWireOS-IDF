@@ -175,7 +175,7 @@ uint16_t *modbus_read_input_registers(int sock, uint16_t start_address, uint16_t
     return modbus_read(sock, 0x04, start_address, quantity);
 }
 
-static uint16_t *modbus_read_json(int sock, int func, uint16_t start_address, uint16_t quantity) {
+static uint16_t *modbus_tcp_read_json(int sock, int func, uint16_t start_address, uint16_t quantity) {
 
     uint16_t *response;
     char jobjectid[64];
@@ -198,8 +198,8 @@ static uint16_t *modbus_read_json(int sock, int func, uint16_t start_address, ui
 
 static void modbus_client_task(void *pvParameters) {
 
-    const char *server_host = MODBUS_TCP_DEFAULT_HOST;
-    const uint16_t server_port = MODBUS_TCP_DEFAULT_PORT;
+    static char server_host[BUFTINY];
+    static uint16_t server_port,server_mbaddr;
 
     // replace loop with connector loop RTU/TCP
     while (true) {
@@ -210,10 +210,28 @@ static void modbus_client_task(void *pvParameters) {
         jsonAddObject_string("CHN","modbus");
         jsonAddObject("data");
 
-        int sock = modbus_tcp_connect(server_host, server_port);
-        if (sock >= 0) {
-            modbus_read_json(sock, 0x03, 0x1000, MODBUS_NUMBER_OF_REGISTERS);
-            close(sock);
+        for(cfg_call *call = reset_modbus_cfg_call(); call != NULL; call = next_modbus_cfg_call()) {
+            if (strcmp(call->ad, "modbus-tcp") == 0) {
+
+                ESP_LOGI(TAG, "Processing Modbus TCP call: %s:%s:%d:%d:%d", call->tag, call->ad, call->fn, call->rs, call->rn);
+                //cumulates call by tag, address
+                // extract modbus call type from call->ad 
+                if(sscanf(call->ad, "%s:%u:%u", server_host, &server_port, &server_mbaddr) != 3) {
+                    ESP_LOGE(TAG, "Failed to parse Modbus TCP call address: %s", call->ad);
+                    continue;
+                }
+
+                int sock = modbus_tcp_connect(server_host, server_port);
+                if (sock >= 0) {
+                    modbus_tcp_read_json(sock, call->fn, call->rs, call->rn);
+                    modbus_tcp_disconnect(sock);
+                } else {
+                    ESP_LOGW(TAG, "Failed to connect to Modbus server for call: %s", call->tag);
+                }
+                close(sock);
+            } else {
+                ESP_LOGW(TAG, "Unsupported Modbus call address: %s", call->ad);
+            }
         }
 
         jsonCloseAll();        
