@@ -85,10 +85,6 @@ static void modbus_client_task(void *pvParameters) {
     while (true) {
 
         jsonInit();
-        jsonAddObject_string("DEV","contrel-emm");
-        jsonAddObject_string("BUS",MODBUS_TCP_DEFAULT_HOST);
-        jsonAddObject_string("CHN","modbus");
-        jsonAddObject("data");
 
         for(cfg_call *call = reset_modbus_cfg_call(); call != NULL; call = next_modbus_cfg_call()) {
  
@@ -98,6 +94,11 @@ static void modbus_client_task(void *pvParameters) {
                 ESP_LOGE(TAG, "Failed to parse Modbus TCP call address: %s", call->ad);
                 continue;
                 }
+
+            jsonAddObject_string("DEV",call->tag);
+            jsonAddObject_string("BUS",call->ad);
+            jsonAddObject_string("CHN","modbus");
+            jsonAddObject("data");
 
             // TCP Network call
             if(strcmp(server_type, "tcp") == 0) {
