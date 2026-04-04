@@ -94,42 +94,42 @@ static void modbus_client_task(void *pvParameters) {
 
         for(cfg_call *call = reset_modbus_cfg_call(); call != NULL; call = next_modbus_cfg_call()) {
  
-            ESP_LOGI(TAG, "Processing Modbus TCP call: %s:%s:%d:%d:%d", call->tag, call->ad, call->fn, call->rs, call->rn);
-            // extract modbus call parameters from call->ad 
-            if(sscanf(call->ad, "%s:%s:%hu:%hu", server_type, server_host, &server_port, &server_unit_id) != 4) {
-                ESP_LOGE(TAG, "Failed to parse Modbus TCP call address: %s", call->ad);
-                continue;
-                }
+          jsonAddObject_string("DEV",call->tag);
+          jsonAddObject_string("BUS",call->ad);
+          jsonAddObject_string("CHN","modbus");
+          jsonAddObject("data");
 
-            jsonAddObject_string("DEV",call->tag);
-            jsonAddObject_string("BUS",call->ad);
-            jsonAddObject_string("CHN","modbus");
-            jsonAddObject("data");
-
-            // TCP Network call
-            if(strcmp(server_type, "tcp") == 0) {
-                int sock = modbus_tcp_connect(server_host, server_port);
-                if (sock >= 0) {
-                    modbus_tcp_read_json(sock, server_unit_id, call->fn, call->rs, call->rn);
-                    modbus_tcp_disconnect(sock);
-                    close(sock);
-                } else {
-                    ESP_LOGW(TAG, "Failed to connect to Modbus server for call: %s", call->tag);
-                }
+          ESP_LOGI(TAG, "Processing Modbus TCP call: %s:%s:%d:%d:%d", call->tag, call->ad, call->fn, call->rs, call->rn);
+          // extract modbus call parameters from call->ad 
+          if(sscanf(call->ad, "%s:%s:%hu:%hu", server_type, server_host, &server_port, &server_unit_id) != 4) {
+              ESP_LOGE(TAG, "Failed to parse Modbus TCP call address: %s", call->ad);
+              jsonAddObject_printf("CFG_Error", "Failed to parse Modbus TCP call address: %s", call->ad);
               }
-
-            // RTU Serial call - not implemented yet, placeholder for future expansion 
-            else if(strcmp(server_type, "rtu") == 0) {
-                // RTU client call - not implemented yet, placeholder for future expansion
-                ESP_LOGW(TAG, "Modbus RTU client not implemented yet for call: %s", call->tag);
-                continue; 
-              } 
-
-            // Unknown server type
-            else {
-              ESP_LOGW(TAG, "Unsupported Modbus call address: %s", call->ad);
+ 
+          // TCP Network call
+          if(strcmp(server_type, "tcp") == 0) {
+              int sock = modbus_tcp_connect(server_host, server_port);
+              if (sock >= 0) {
+                  modbus_tcp_read_json(sock, server_unit_id, call->fn, call->rs, call->rn);
+                  modbus_tcp_disconnect(sock);
+                  close(sock);
+              } else {
+                  ESP_LOGW(TAG, "Failed to connect to Modbus server for call: %s", call->tag);
+              }
             }
+
+          // RTU Serial call - not implemented yet, placeholder for future expansion 
+          else if(strcmp(server_type, "rtu") == 0) {
+              // RTU client call - not implemented yet, placeholder for future expansion
+              ESP_LOGW(TAG, "Modbus RTU client not implemented yet for call: %s", call->tag);
+              continue; 
+            } 
+
+          // Unknown server type
+          else {
+            ESP_LOGW(TAG, "Unsupported Modbus call address: %s", call->ad);
           }
+        }
 
         jsonCloseAll();        
 
