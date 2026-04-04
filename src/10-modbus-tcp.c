@@ -9,13 +9,6 @@
 #include "10-modbus-cfg.h"
 
 #define TAG "MODBUS_TCP"
-#define MODBUS_TCP_DEFAULT_HOST "192.168.43.169"
-#define MODBUS_TCP_DEFAULT_PORT 502
-#define MODBUS_TCP_UNIT_ID 1
-#define MODBUS_TCP_RETRY_DELAY_MS 300000
-#define MODBUS_TCP_REQUEST_TIMEOUT_SEC 5
-#define MODBUS_TCP_MAX_REGISTERS 32
-#define MODBUS_NUMBER_OF_REGISTERS 16
 #define ARRAY_SIZE(arr) (sizeof(arr) / sizeof((arr)[0]))
 
 static uint16_t modbus_transaction_id = 1;
@@ -71,9 +64,8 @@ int modbus_tcp_disconnect(int sock) {
     return close(sock);
 }   
 
-static uint16_t *modbus_read(int sock, int func, uint16_t start_address, uint16_t quantity) {
+static uint16_t *modbus_read(int sock, uint8_t func, uint16_t start_address, uint16_t quantity) {
     
-    uint8_t unit_id = MODBUS_TCP_UNIT_ID;
     static uint16_t dest[MODBUS_TCP_MAX_REGISTERS];
 
     if (quantity == 0 || quantity > MODBUS_TCP_MAX_REGISTERS) {
@@ -179,7 +171,7 @@ uint16_t *modbus_read_input_registers(int sock, uint16_t start_address, uint16_t
 }
 
 // Default entry for modbus tcp client task, will be called by modbus client task loop for each call in config
-uint16_t *modbus_tcp_read_json(int sock, int func, uint16_t start_address, uint16_t quantity) {
+uint16_t *modbus_tcp_read_json(int sock,uint8_t unit_id, uint8_t func, uint16_t start_address, uint16_t quantity) {
 
     uint16_t *response;
     char jobjectid[64];
@@ -190,7 +182,7 @@ uint16_t *modbus_tcp_read_json(int sock, int func, uint16_t start_address, uint1
     jsonAddValue_uint16_t(0); // will be replaced by query result
     jsonAddValue_uint16_t(start_address);
     
-    if ((response=modbus_read_holding_registers(sock,0x1000, quantity))!=NULL) {
+    if ((response=modbus_tcp_read(sock, func, start_address, quantity)) != NULL) {
     for (uint16_t i = 0; i < quantity; ++i) {
         //ESP_LOGI(TAG, "holding register[%d] = 0x%04X", i, response[i]);
         jsonAddValue_uint16_t(response[i]);

@@ -10,5 +10,5 @@ uint16_t *modbus_read_coils(int sock, uint16_t start_address, uint16_t quantity)
 uint16_t *modbus_read_discrete_inputs(int sock, uint16_t start_address, uint16_t quantity);
 uint16_t *modbus_read_holding_registers(int sock, uint16_t start_address, uint16_t quantity);
 uint16_t *modbus_read_input_registers(int sock, uint16_t start_address, uint16_t quantity);
-uint16_t *modbus_tcp_read_json(int sock, int func, uint16_t start_address, uint16_t quantity);
+uint16_t *modbus_tcp_read_json(int sock,uint8_t unit_id, uint8_t func, uint16_t start_address, uint16_t quantity);
 #endif

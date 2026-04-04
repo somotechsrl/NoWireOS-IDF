@@ -54,3 +54,10 @@ typedef struct {
   // max MODBUS_CONFIG  calls... -- see HAL.h
   cfg_call calls[MODBUS_CONFIGS];
 } modbus_config;
+
+#define MODBUS_TCP_DEFAULT_PORT 502
+#define MODBUS_TCP_UNIT_ID 1
+#define MODBUS_TCP_RETRY_DELAY_MS 300000
+#define MODBUS_TCP_REQUEST_TIMEOUT_SEC 5
+#define MODBUS_TCP_MAX_REGISTERS 32
+#define MODBUS_NUMBER_OF_REGISTERS 16
