@@ -11,6 +11,7 @@
 #include "10-modbus-rtu.h"  
 
 #define TAG "MODBUS_CFG"
+TaskHandle_t modbus_client_task_handle;
 static modbus_config modbus_cfg;
 
 static void add_modbus_cfg_call(const char *tag, const char *ad, uint8_t fn, uint16_t rs, uint8_t rn) {
@@ -80,6 +81,8 @@ static cfg_call *next_modbus_cfg_call() {
 // Modbus client task, will loop through calls in config and execute them, then send json result to mqtt
 static void modbus_client_task(void *pvParameters) {
 
+    modbus_client_task_handle = xTaskGetCurrentTaskHandle();
+
     static char server_type[32]; // rtu, tcp
     static char server_host[BUFTINY]; // serial,speed,sb,parity || server FQDN or IP
     static uint16_t server_port,server_unit_id; 
@@ -136,6 +139,8 @@ static void modbus_client_task(void *pvParameters) {
 
         mqtt_send_up_data(jsonGetBase64());
         vTaskDelay(pdMS_TO_TICKS(MODBUS_TCP_RETRY_DELAY_MS));
+
+        ESP_LOGI(TAG,"%s", "Modbus client task delay terminated, restarting loop");
     }
   }
 

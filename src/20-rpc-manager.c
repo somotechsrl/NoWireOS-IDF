@@ -83,6 +83,9 @@ void rpcManage(const char *payload, bool sync) {
     // ************ RPC group Commands
     case RPC_Trigger:
       trigger=true;
+      if(modbus_client_task_handle != NULL) {
+        xTaskAbortDelay(modbus_client_task_handle);
+        }
       jsonAddObject_string("value","Datalogger Triggered");
       break;
       

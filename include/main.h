@@ -55,6 +55,9 @@ typedef struct {
   cfg_call calls[MODBUS_CONFIGS];
 } modbus_config;
 
+extern TaskHandle_t modbus_client_task_handle;
+
+
 #define MODBUS_TCP_DEFAULT_PORT 502
 #define MODBUS_TCP_UNIT_ID 1
 #define MODBUS_TCP_RETRY_DELAY_MS 300000
