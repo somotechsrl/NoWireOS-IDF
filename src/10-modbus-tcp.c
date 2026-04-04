@@ -64,7 +64,7 @@ int modbus_tcp_disconnect(int sock) {
     return close(sock);
 }   
 
-static uint16_t *modbus_read(int sock, uint8_t unit_id, uint8_t func, uint16_t start_address, uint16_t quantity) {
+static uint16_t *modbus_tcp_read(int sock, uint8_t unit_id, uint8_t func, uint16_t start_address, uint16_t quantity) {
     
     static uint16_t dest[MODBUS_TCP_MAX_REGISTERS];
 
