@@ -60,7 +60,8 @@ void mqtt_send_rpc_response(const char *respid) {
     // esp_mqtt_client_handle_t client = esp_mqtt_client_init(NULL);
     char topic_resp[TSIZE];
     snprintf(topic_resp, TSIZE, "%s/%s/%s/rpc/%s", THEAD, BOARDID, serial_str, respid);
-    ESP_LOGI(TAG, "Sending RPC Response: %s :: %s", topic_resp, jsonGetBuffer());
+    ESP_LOGI(TAG, "Sending RPC Json Response: %s :: %s", topic_resp, jsonGetBuffer());
+    ESP_LOGI(TAG, "Sending RPC Base64 Response: %s :: %s", topic_resp, jsonGetBase64());
     esp_mqtt_client_publish(client, topic_resp, jsonGetBase64(), 0, 1, 0);
 }       
 

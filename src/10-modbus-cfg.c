@@ -37,8 +37,8 @@ void add_modbus_cfg_call(const char *tag, const char *ad, uint8_t fn, uint16_t r
   // checks if tag already exists
   for (uint8_t i = 0; i < modbus_cfg.ncalls; i++) {
     if (strcmp(modbus_cfg.calls[i].tag, tag) == 0 && strcmp(modbus_cfg.calls[i].ad, ad) == 0 && modbus_cfg.calls[i].fn == fn && modbus_cfg.calls[i].rs == rs && modbus_cfg.calls[i].rn == rn) {
-      ESP_LOGW(TAG, "Modbus call with tag '%s' and address '%s' already exists", tag, ad);
-      jsonAddObject_printf("CFG_Error", "Modbus call with tag '%s' and address '%s' already exists", tag, ad);
+      ESP_LOGW(TAG, "Modbus call with tag '%s;%s;%d;%d;%d' already exists", tag, ad, fn, rs, rn);
+      jsonAddObject_printf("CFG_Error", "Modbus call with tag '%s;%s;%d;%d;%d' already exists", tag, ad, fn, rs, rn);
       return;
     }
   }
@@ -49,15 +49,26 @@ void add_modbus_cfg_call(const char *tag, const char *ad, uint8_t fn, uint16_t r
   call->rs = rs;
   call->fn = fn;
   call->rn = rn;
-  jsonAddObject_printf("CFG_Done", "Modbus call added: tag='%s', ad='%s', rs=%u, fn=%u, rn=%u", tag, ad, rs, fn, rn);
+  jsonAddObject_printf("CFG_Done", "Modbus call added: '%s;%s;%d;%d;%d'", tag, ad, fn, rs, rn);
 }
 
+static uint8_t mb_call_index = 0;
 cfg_call *next_modbus_cfg_call() {
-  static uint8_t index = 0;
-  if (index < modbus_cfg.ncalls) {
-    return &modbus_cfg.calls[index++];
+  if (mb_call_index < modbus_cfg.ncalls) {
+    ESP_LOGI(TAG, "Getting call #%d: %s:%s;%d;%d;%d", mb_call_index, modbus_cfg.calls[mb_call_index].tag, modbus_cfg.calls[mb_call_index].ad, modbus_cfg.calls[mb_call_index].fn, modbus_cfg.calls[mb_call_index].rs, modbus_cfg.calls[mb_call_index].rn);
+    return &modbus_cfg.calls[mb_call_index++];
   } else {
-    index = 0; // reset for next iteration
+    mb_call_index = 0; // reset for next iteration
+    return NULL;
+  }
+}
+
+cfg_call *get_modbus_cfg_call() {
+  mb_call_index=0; // reset index for new retrieval
+  if (mb_call_index < modbus_cfg.ncalls) {
+    ESP_LOGI(TAG, "Getting call #%d: %s:%s;%d;%d;%d", mb_call_index, modbus_cfg.calls[mb_call_index].tag, modbus_cfg.calls[mb_call_index].ad, modbus_cfg.calls[mb_call_index].fn, modbus_cfg.calls[mb_call_index].rs, modbus_cfg.calls[mb_call_index].rn);
+    return &modbus_cfg.calls[mb_call_index++];
+  } else {
     return NULL;
   }
 }

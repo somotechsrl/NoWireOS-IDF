@@ -92,9 +92,9 @@ const char *jsonGetCompressedBuffer() {
 
 // uses encryption
 const char *jsonGetEncryptedBuffer() {
-  static char jcbuffer[BUFSIZE];
+  static unsigned char jcbuffer[BUFSIZE];
   for(int i=0;i<rp-r;i++) jcbuffer[i]=r[i] ^ XKEY;
-  return jcbuffer;
+  return (const char *)jcbuffer;
 }
 uint16_t jsonGetCompressedSize() {
   // simply return difference of pointers...
@@ -103,10 +103,8 @@ uint16_t jsonGetCompressedSize() {
 
 const char *jsonGetBase64() {
   size_t olen;
-  unsigned char *jb;
+  unsigned char *jb=(unsigned char *)jsonGetEncryptedBuffer();
   static unsigned char b64buffer[BUFSIZE];
-  jb=(unsigned char *)jsonGetCompressedBuffer();
-  for(int i=0;i<rp-r;i++) jb[i]=r[i] ^ XKEY;
   mbedtls_base64_encode(b64buffer, sizeof(b64buffer), &olen, jb, rp - r);
   return (char *)b64buffer;
 }
@@ -204,12 +202,15 @@ void jsonAddValue_string(const char *value) {
 }
 // adds a string
 void jsonAddValue_printf(const char *format, ...) {
+ 
   char out[BUFTINY];
   va_list args;
   va_start(args, format);
   vsprintf(out, format, args);
   va_end(args);
-  sprintf(s + strlen(s), "%s\"%s\"", jsonComma(),out);
+ 
+  sprintf(s + strlen(s),"%s\"%s\"", jsonComma(),out);
+  bpAddValue('s', out, strlen(out) + 1);
 }
 
 // adds an array header
@@ -233,12 +234,17 @@ void jsonAddObject_string(const char *oname, const char *value) {
 
 // adds a string data object
 void jsonAddObject_printf(const char *oname, const char *format, ...) {
+
   char out[BUFTINY];
   va_list args;
   va_start(args, format);
   vsprintf(out, format, args);
   va_end(args);
+
+  bpAddValue('o', oname, strlen(oname) + 1);
+  bpAddValue('s', out, strlen(out) + 1);
   sprintf(s + strlen(s), "%s\"%s\":\"%s\"", jsonComma(), oname, out);
+
 }
 
 // adds an unsigned short object

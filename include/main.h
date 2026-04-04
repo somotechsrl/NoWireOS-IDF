@@ -24,8 +24,8 @@
 //#include "10-json-encoder.hpp"
 //#include "00-prototypes.h"
 
-#define BUFSIZE 1024
-#define BUFTINY 128
+#define BUFSIZE 2024
+#define BUFTINY 512
 
 #define OK "OK"
 #define KO "KO"
