@@ -1,8 +1,7 @@
 #include "main.h"
 #include "10-core-wifi.h"
 #include "10-core-mqtt.h"
-#include "10-modbus-tcp.h"
-#include "10-modbus-rtu.h"
+#include "10-modbus-cfg.h"
 #include "30-utils.h"
 
 

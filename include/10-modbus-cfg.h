@@ -5,8 +5,5 @@
 // src/10-modbus-cfg.c prototypes
 // ****************************
 void addModbusCall(const char *params);
-void add_modbus_cfg_call(const char *tag, const char *ad, uint8_t fn, uint16_t rs, uint8_t rn);
-cfg_call *reset_modbus_cfg_call();
-cfg_call *next_modbus_cfg_call();
 void modbus_init(void);
 #endif

@@ -10,22 +10,7 @@
 #define TAG "MODBUS_CFG"
 static modbus_config modbus_cfg;
 
-void addModbusCall(const char *params) {
-  // expects params in format: tag,ad,fn,rs,rn
-  char tag[32], ad[32];
-  uint8_t fn, rn;
-  uint16_t rs;
-
-  if (sscanf(params, "%31[^;];%31[^;];%hhu;%hu;%hhu", tag, ad, &fn, &rs, &rn) != 5) {
-    ESP_LOGW(TAG, "Invalid parameters for Modbus call: %s", params);
-    jsonAddValue_printf("Invalid parameters for Modbus call: %s", params);
-    return;
-  }
-
-  add_modbus_cfg_call(tag, ad, fn, rs, rn);
-}
-
-void add_modbus_cfg_call(const char *tag, const char *ad, uint8_t fn, uint16_t rs, uint8_t rn) {
+static void add_modbus_cfg_call(const char *tag, const char *ad, uint8_t fn, uint16_t rs, uint8_t rn) {
 
   if (modbus_cfg.ncalls >= MODBUS_CONFIGS) {
     ESP_LOGW(TAG, "Maximum number of Modbus calls reached");
@@ -51,11 +36,25 @@ void add_modbus_cfg_call(const char *tag, const char *ad, uint8_t fn, uint16_t r
   jsonAddObject_printf("CFG_Done", "Modbus call added: '%s;%s;%d;%d;%d'", tag, ad, fn, rs, rn);
 }
 
+void addModbusCall(const char *params) {
+  // expects params in format: tag,ad,fn,rs,rn
+  char tag[32], ad[32];
+  uint8_t fn, rn;
+  uint16_t rs;
+
+  if (sscanf(params, "%31[^;];%31[^;];%hhu;%hu;%hhu", tag, ad, &fn, &rs, &rn) != 5) {
+    ESP_LOGW(TAG, "Invalid parameters for Modbus call: %s", params);
+    jsonAddValue_printf("Invalid parameters for Modbus call: %s", params);
+    return;
+  }
+
+  add_modbus_cfg_call(tag, ad, fn, rs, rn);
+}
 
 
 static uint8_t mb_call_index = 0;
 
-cfg_call *reset_modbus_cfg_call() {
+static cfg_call *reset_modbus_cfg_call() {
   mb_call_index=0; // reset index for new retrieval
   if (mb_call_index < modbus_cfg.ncalls) {
     ESP_LOGI(TAG, "Getting call #%d: %s:%s;%d;%d;%d", mb_call_index, modbus_cfg.calls[mb_call_index].tag, modbus_cfg.calls[mb_call_index].ad, modbus_cfg.calls[mb_call_index].fn, modbus_cfg.calls[mb_call_index].rs, modbus_cfg.calls[mb_call_index].rn);
@@ -65,7 +64,7 @@ cfg_call *reset_modbus_cfg_call() {
   }
 }
 
-cfg_call *next_modbus_cfg_call() {
+static cfg_call *next_modbus_cfg_call() {
   if (mb_call_index < modbus_cfg.ncalls) {
     ESP_LOGI(TAG, "Getting call #%d: %s:%s;%d;%d;%d", mb_call_index, modbus_cfg.calls[mb_call_index].tag, modbus_cfg.calls[mb_call_index].ad, modbus_cfg.calls[mb_call_index].fn, modbus_cfg.calls[mb_call_index].rs, modbus_cfg.calls[mb_call_index].rn);
     return &modbus_cfg.calls[mb_call_index++];
