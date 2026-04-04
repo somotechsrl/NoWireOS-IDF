@@ -227,6 +227,6 @@ static void modbus_client_task(void *pvParameters) {
     }
 }
 
-void modbus_init(void) {
+void modbus_tcp_init(void) {
     xTaskCreate(modbus_client_task, "modbus_client", 4096, NULL, 5, NULL);
 }

@@ -11,5 +11,5 @@ uint16_t *modbus_read_coils(int sock, uint16_t start_address, uint16_t quantity)
 uint16_t *modbus_read_discrete_inputs(int sock, uint16_t start_address, uint16_t quantity);
 uint16_t *modbus_read_holding_registers(int sock, uint16_t start_address, uint16_t quantity);
 uint16_t *modbus_read_input_registers(int sock, uint16_t start_address, uint16_t quantity);
-void modbus_init(void);
+void modbus_tcp_init(void);
 #endif

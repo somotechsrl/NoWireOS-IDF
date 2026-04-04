@@ -16,7 +16,9 @@ void app_main() {
     // Initialize Wi-Fi and MQTT
     wifi_init();
     mqtt_init();
-    modbus_init();
+    modbus_tcp_init();
+    modbus_rtu_init();
+
 
     // start web_server
     //start_web_server();

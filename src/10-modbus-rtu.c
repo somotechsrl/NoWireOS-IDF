@@ -80,6 +80,6 @@ static void modbus_rtu_client_task(void *pvParameters) {
     }
 }
 
-void app_main() {
+void modbus_rtu_init(void) {
     xTaskCreate(modbus_rtu_client_task, "modbus_task", 4096, NULL, 5, NULL);
 }

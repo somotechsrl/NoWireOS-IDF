@@ -5,5 +5,5 @@
 // src/10-modbus-rtu.c prototypes
 // ****************************
 esp_err_t modbus_receive_response(uint8_t *response, size_t *len);
-void app_main();
+void modbus_rtu_init(void);
 #endif
