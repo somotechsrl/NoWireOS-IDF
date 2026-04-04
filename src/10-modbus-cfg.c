@@ -52,7 +52,20 @@ void add_modbus_cfg_call(const char *tag, const char *ad, uint8_t fn, uint16_t r
   jsonAddObject_printf("CFG_Done", "Modbus call added: '%s;%s;%d;%d;%d'", tag, ad, fn, rs, rn);
 }
 
+
+
 static uint8_t mb_call_index = 0;
+
+cfg_call *reset_modbus_cfg_call() {
+  mb_call_index=0; // reset index for new retrieval
+  if (mb_call_index < modbus_cfg.ncalls) {
+    ESP_LOGI(TAG, "Getting call #%d: %s:%s;%d;%d;%d", mb_call_index, modbus_cfg.calls[mb_call_index].tag, modbus_cfg.calls[mb_call_index].ad, modbus_cfg.calls[mb_call_index].fn, modbus_cfg.calls[mb_call_index].rs, modbus_cfg.calls[mb_call_index].rn);
+    return &modbus_cfg.calls[mb_call_index++];
+  } else {
+    return NULL;
+  }
+}
+
 cfg_call *next_modbus_cfg_call() {
   if (mb_call_index < modbus_cfg.ncalls) {
     ESP_LOGI(TAG, "Getting call #%d: %s:%s;%d;%d;%d", mb_call_index, modbus_cfg.calls[mb_call_index].tag, modbus_cfg.calls[mb_call_index].ad, modbus_cfg.calls[mb_call_index].fn, modbus_cfg.calls[mb_call_index].rs, modbus_cfg.calls[mb_call_index].rn);
@@ -63,12 +76,3 @@ cfg_call *next_modbus_cfg_call() {
   }
 }
 
-cfg_call *get_modbus_cfg_call() {
-  mb_call_index=0; // reset index for new retrieval
-  if (mb_call_index < modbus_cfg.ncalls) {
-    ESP_LOGI(TAG, "Getting call #%d: %s:%s;%d;%d;%d", mb_call_index, modbus_cfg.calls[mb_call_index].tag, modbus_cfg.calls[mb_call_index].ad, modbus_cfg.calls[mb_call_index].fn, modbus_cfg.calls[mb_call_index].rs, modbus_cfg.calls[mb_call_index].rn);
-    return &modbus_cfg.calls[mb_call_index++];
-  } else {
-    return NULL;
-  }
-}
