@@ -32,6 +32,9 @@ void rpcManage(const char *payload, bool sync) {
 
   ESP_LOGI(TAG, "Received: %s", payload);
 
+  // trigger task handle to call AFTER RPC execution, to allow sync/async response management
+  TaskHandle_t trigger_task_handle = NULL;
+
   // extracts ID and Command
   char *p,rpcb[BUFTINY];
   strcpy(rpcb, payload);
@@ -82,11 +85,13 @@ void rpcManage(const char *payload, bool sync) {
 
     // ************ RPC group Commands
     case RPC_Trigger:
-      trigger=true;
-      if(modbus_client_task_handle != NULL) {
-        xTaskAbortDelay(modbus_client_task_handle);
+      if(!strcmp(rpc_params,"modbus")) {
+        jsonAddObject_string("value","OK: Modbus Triggered");
+        trigger_task_handle = modbus_client_task_handle;
         }
-      jsonAddObject_string("value","Datalogger Triggered");
+      else {
+        jsonAddObject_string("value","ERROR:Unknown Trigger");
+        }
       break;
       
     case RPC_List:
@@ -133,6 +138,12 @@ void rpcManage(const char *payload, bool sync) {
   ESP_LOGI(TAG, "MODE: %s", sync ? "SYNC:" : "ASYNC:");
   ESP_LOGI(TAG, "%s", jsonGetBuffer());
   if(sync) mqtt_send_rpc_response(respid);
-  jsonClear();
+
+  // After RPC calls evetal trigger
+  if(trigger_task_handle) {
+    ESP_LOGI(TAG, "Triggering task handle: %p", trigger_task_handle);
+    xTaskAbortDelay(trigger_task_handle);
+    }
+ }
   
-}
+
