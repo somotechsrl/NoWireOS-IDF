@@ -6,7 +6,6 @@
 #include <unistd.h>
 #include "10-json-encoder.h"
 #include "10-core-mqtt.h"
-#include "10-modbus-cfg.h"
 
 #define TAG "MODBUS_CFG"
 static modbus_config modbus_cfg;
@@ -135,6 +134,6 @@ static void modbus_client_task(void *pvParameters) {
     }
 }
 
-void modbus_tcp_init(void) {
+void modbus_init(void) {
     xTaskCreate(modbus_client_task, "modbus_client", 4096, NULL, 5, NULL);
 }
