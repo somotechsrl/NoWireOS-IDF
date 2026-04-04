@@ -156,18 +156,18 @@ static uint16_t *modbus_read(int sock, uint8_t unit_id, uint8_t func, uint16_t s
 
 
 // Not really used but can be used for future expansion to other function codes
-uint16_t *modbus_read_coils(int sock, uint16_t start_address, uint16_t quantity) {
-    return modbus_read(sock, 0x01, start_address, quantity);
+uint16_t *modbus_read_coils(int sock, uint8_t unit_id, uint16_t start_address, uint16_t quantity) {
+    return modbus_read(sock, unit_id, 0x01, start_address, quantity);
 }
-uint16_t *modbus_read_discrete_inputs(int sock, uint16_t start_address, uint16_t quantity) {
-    return modbus_read(sock, 0x02, start_address, quantity);
+uint16_t *modbus_read_discrete_inputs(int sock, uint8_t unit_id, uint16_t start_address, uint16_t quantity) {
+    return modbus_read(sock, unit_id, 0x02, start_address, quantity);
 }
 
-uint16_t *modbus_read_holding_registers(int sock, uint16_t start_address, uint16_t quantity) {
-   return modbus_read(sock, 0x03, start_address, quantity);
+uint16_t *modbus_read_holding_registers(int sock, uint8_t unit_id, uint16_t start_address, uint16_t quantity) {
+   return modbus_read(sock, unit_id, 0x03, start_address, quantity);
 }
-uint16_t *modbus_read_input_registers(int sock, uint16_t start_address, uint16_t quantity) {
-    return modbus_read(sock, 0x04, start_address, quantity);
+uint16_t *modbus_read_input_registers(int sock, uint8_t unit_id, uint16_t start_address, uint16_t quantity) {
+    return modbus_read(sock, unit_id, 0x04, start_address, quantity);
 }
 
 // Default entry for modbus tcp client task, will be called by modbus client task loop for each call in config
