@@ -6,6 +6,7 @@
 #include <unistd.h>
 #include "10-json-encoder.h"
 #include "10-core-mqtt.h"
+#include "10-modbus-cfg.h"
 
 #define TAG "MODBUS_TCP"
 #define MODBUS_TCP_DEFAULT_HOST "192.168.43.169"
@@ -70,7 +71,7 @@ int modbus_tcp_disconnect(int sock) {
     return close(sock);
 }   
 
-uint16_t *modbus_read(int sock, int func, uint16_t start_address, uint16_t quantity) {
+static uint16_t *modbus_read(int sock, int func, uint16_t start_address, uint16_t quantity) {
     
     uint8_t unit_id = MODBUS_TCP_UNIT_ID;
     static uint16_t dest[MODBUS_TCP_MAX_REGISTERS];
@@ -161,6 +162,8 @@ uint16_t *modbus_read(int sock, int func, uint16_t start_address, uint16_t quant
     return dest;
 }
 
+
+// Not really used but can be used for future expansion to other function codes
 uint16_t *modbus_read_coils(int sock, uint16_t start_address, uint16_t quantity) {
     return modbus_read(sock, 0x01, start_address, quantity);
 }
@@ -175,7 +178,8 @@ uint16_t *modbus_read_input_registers(int sock, uint16_t start_address, uint16_t
     return modbus_read(sock, 0x04, start_address, quantity);
 }
 
-static uint16_t *modbus_tcp_read_json(int sock, int func, uint16_t start_address, uint16_t quantity) {
+// Default entry for modbus tcp client task, will be called by modbus client task loop for each call in config
+uint16_t *modbus_tcp_read_json(int sock, int func, uint16_t start_address, uint16_t quantity) {
 
     uint16_t *response;
     char jobjectid[64];
@@ -196,55 +200,3 @@ static uint16_t *modbus_tcp_read_json(int sock, int func, uint16_t start_address
     return response;
 }
 
-static void modbus_client_task(void *pvParameters) {
-
-    static char server_host[BUFTINY];
-    static uint16_t server_port,server_mbaddr;
-
-    // replace loop with connector loop RTU/TCP
-    while (true) {
-
-        jsonInit();
-        jsonAddObject_string("DEV","contrel-emm");
-        jsonAddObject_string("BUS",MODBUS_TCP_DEFAULT_HOST);
-        jsonAddObject_string("CHN","modbus");
-        jsonAddObject("data");
-
-        for(cfg_call *call = reset_modbus_cfg_call(); call != NULL; call = next_modbus_cfg_call()) {
-            if (strcmp(call->ad, "modbus-tcp") == 0) {
-
-                ESP_LOGI(TAG, "Processing Modbus TCP call: %s:%s:%d:%d:%d", call->tag, call->ad, call->fn, call->rs, call->rn);
-                //cumulates call by tag, address
-                // extract modbus call type from call->ad 
-                if(sscanf(call->ad, "%s:%u:%u", server_host, &server_port, &server_mbaddr) != 3) {
-                    ESP_LOGE(TAG, "Failed to parse Modbus TCP call address: %s", call->ad);
-                    continue;
-                }
-
-                int sock = modbus_tcp_connect(server_host, server_port);
-                if (sock >= 0) {
-                    modbus_tcp_read_json(sock, call->fn, call->rs, call->rn);
-                    modbus_tcp_disconnect(sock);
-                } else {
-                    ESP_LOGW(TAG, "Failed to connect to Modbus server for call: %s", call->tag);
-                }
-                close(sock);
-            } else {
-                ESP_LOGW(TAG, "Unsupported Modbus call address: %s", call->ad);
-            }
-        }
-
-        jsonCloseAll();        
-
-        // logs json, and base 64 encrypted json
-        ESP_LOGI(TAG,"%s",jsonGetBuffer());
-        ESP_LOGI(TAG,"%s",jsonGetBase64());
-
-        mqtt_send_up_data(jsonGetBase64());
-        vTaskDelay(pdMS_TO_TICKS(MODBUS_TCP_RETRY_DELAY_MS));
-    }
-}
-
-void modbus_tcp_init(void) {
-    xTaskCreate(modbus_client_task, "modbus_client", 4096, NULL, 5, NULL);
-}

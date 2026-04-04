@@ -76,3 +76,65 @@ cfg_call *next_modbus_cfg_call() {
   }
 }
 
+// Modbus client task, will loop through calls in config and execute them, then send json result to mqtt
+static void modbus_client_task(void *pvParameters) {
+
+    static char server_type[32]; // rtu, tcp
+    static char server_host[BUFTINY]; // serial,speed,sb,parity || server FQDN or IP
+    static uint16_t server_port,server_mbaddr; 
+
+    // replace loop with connector loop RTU/TCP
+    while (true) {
+
+        jsonInit();
+        jsonAddObject_string("DEV","contrel-emm");
+        jsonAddObject_string("BUS",MODBUS_TCP_DEFAULT_HOST);
+        jsonAddObject_string("CHN","modbus");
+        jsonAddObject("data");
+
+        for(cfg_call *call = reset_modbus_cfg_call(); call != NULL; call = next_modbus_cfg_call()) {
+ 
+            ESP_LOGI(TAG, "Processing Modbus TCP call: %s:%s:%d:%d:%d", call->tag, call->ad, call->fn, call->rs, call->rn);
+            // extract modbus call parameters from call->ad 
+            if(sscanf(call->ad, "%s:%s:%hu:%hu", server_type, server_host, &server_port, &server_mbaddr) != 4) {
+                ESP_LOGE(TAG, "Failed to parse Modbus TCP call address: %s", call->ad);
+                continue;
+                }
+
+            // TCP Network call
+            if(strcmp(server_type, "tcp") == 0) {
+                int sock = modbus_tcp_connect(server_host, server_port);
+                if (sock >= 0) {
+                    modbus_tcp_read_json(sock, call->fn, call->rs, call->rn);
+                    modbus_tcp_disconnect(sock);
+                } else {
+                    ESP_LOGW(TAG, "Failed to connect to Modbus server for call: %s", call->tag);
+                }
+                close(sock);
+                continue;
+
+            // RTU Serial call - not implemented yet, placeholder for future expansion
+            } if(strcmp(server_type, "rtu") == 0) {
+                // RTU client call - not implemented yet, placeholder for future expansion
+                ESP_LOGW(TAG, "Modbus RTU client not implemented yet for call: %s", call->tag);
+                continue; 
+            }
+
+            ESP_LOGW(TAG, "Unsupported Modbus call address: %s", call->ad);
+            }
+        }
+
+        jsonCloseAll();        
+
+        // logs json, and base 64 encrypted json
+        ESP_LOGI(TAG,"%s",jsonGetBuffer());
+        ESP_LOGI(TAG,"%s",jsonGetBase64());
+
+        mqtt_send_up_data(jsonGetBase64());
+        vTaskDelay(pdMS_TO_TICKS(MODBUS_TCP_RETRY_DELAY_MS));
+    }
+}
+
+void modbus_tcp_init(void) {
+    xTaskCreate(modbus_client_task, "modbus_client", 4096, NULL, 5, NULL);
+}

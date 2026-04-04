@@ -6,10 +6,9 @@
 // ****************************
 int modbus_tcp_connect(const char *host, uint16_t port);
 int modbus_tcp_disconnect(int sock);
-uint16_t *modbus_read(int sock, int func, uint16_t start_address, uint16_t quantity);
 uint16_t *modbus_read_coils(int sock, uint16_t start_address, uint16_t quantity);
 uint16_t *modbus_read_discrete_inputs(int sock, uint16_t start_address, uint16_t quantity);
 uint16_t *modbus_read_holding_registers(int sock, uint16_t start_address, uint16_t quantity);
 uint16_t *modbus_read_input_registers(int sock, uint16_t start_address, uint16_t quantity);
-void modbus_tcp_init(void);
+uint16_t *modbus_tcp_read_json(int sock, int func, uint16_t start_address, uint16_t quantity);
 #endif
