@@ -40,7 +40,8 @@ static void add_modbus_cfg_call(const char *tag, const char *ad, uint8_t fn, uin
   jsonAddObject_printf("CFG_Done", "Modbus call added: '%s;%s;%d;%d;%d'", tag, ad, fn, rs, rn);
 }
 
-void addModbusCall(const char *params) {
+// old system -- RPC one call for each register, new system will send all calls in config in one json block for more efficient transmission and processing, this is kept for backward compatibility with old RPC system, but will be deprecated in future in favor of addModbusAggregatedCall which will add calls to current json block for batch processing and transmission
+void addModbusSingleCall(const char *params) {
   // expects params in format: tag,ad,fn,rs,rn
   char tag[32], ad[32];
   uint8_t fn, rn;
@@ -55,6 +56,32 @@ void addModbusCall(const char *params) {
   add_modbus_cfg_call(tag, ad, fn, rs, rn);
 }
 
+void addModbusAggregatedCall(const char *params) {
+  // expects params in format: tag,ad,fn,rs,rn
+  char tag[32], ad[32];
+  uint8_t fn, rn;
+  uint16_t rs;
+  char rs_str[BUFTINY];
+
+  // typical format for aggregated call: tag;ad;fn;rs1:rn1,rs2:rn2,rs3:rn3,... where rs is starting register and rn is number of registers to read, allows for batch processing of multiple registers in one call for more efficient transmission and processing in modbus client task loop
+  // splits single aggregated call with comma separated registers into multiple calls with same tag, ad, fn, but different rs and rn, then adds each call to config for processing in modbus client task loop 
+  if (sscanf(params, "%31[^;];%31[^;];%hhu;%31[^;]s", tag, ad, &fn, rs_str) != 4) {
+    ESP_LOGW(TAG, "Invalid parameters for Modbus aggregated call: %s", params);
+    jsonAddValue_printf("Invalid parameters for Modbus aggregated call: %s", params);
+    return; 
+    }
+  // explodes rs_str into individual register sets, separated by comma, in format rs:rn, then adds each call to config with same tag, ad, fn, but different rs and rn for each register set, allows for batch processing of multiple registers in one call for more efficient transmission and processing in modbus client task loop
+  char *token = strtok((char *)rs_str, ",");
+  while (token != NULL) {
+    if (sscanf(token, "%hu:%hhu", &rs, &rn) == 2) {
+      add_modbus_cfg_call(tag, ad, fn, rs, rn);
+    } else {
+      ESP_LOGW(TAG, "Invalid register set in parameters for Modbus call: %s", token);
+      jsonAddValue_printf("Invalid register set in parameters for Modbus call: %s", token);
+    }
+    token = strtok(NULL, ",");
+  }
+}
 
 static uint8_t mb_call_index = 0;
 
@@ -86,22 +113,35 @@ static void modbus_client_task(void *pvParameters) {
     static char server_type[32]; // rtu, tcp
     static char server_host[BUFTINY]; // serial,speed,sb,parity || server FQDN or IP
     static uint16_t server_port,server_unit_id; 
+    static char curr_block[BUFTINY],last_block[BUFTINY]= ""; // Block Used, for aggregating responses into same block for same server in json output
 
     // replace loop with connector loop RTU/TCP
     while (true) {
 
-        jsonInit();
-
         for(cfg_call *call = reset_modbus_cfg_call(); call != NULL; call = next_modbus_cfg_call()) {
- 
-          jsonAddObject_string("DEV",call->tag);
-          jsonAddObject_string("BUS",call->ad);
-          jsonAddObject_string("CHN","modbus");
-          jsonAddObject("data");
+          // calculates current block for call based on tag and ad, used for json aggregation and mqtt topic grouping
+          snprintf(curr_block, sizeof(curr_block), "%s:%s", call->tag, call->ad);
+          // senses block change based on tag and ad, if same block as previous call, will aggregate into same json block, if different block, will close previous block and start new block for new server
+          if(strcmp(curr_block, last_block) != 0) {
+            if(strlen(last_block) > 0) {
+              jsonCloseAll(); // close previous block if new block is different
+              // logs json, and base 64 encryptedjson
+              ESP_LOGI(TAG,"%s",jsonGetBuffer()); 
+              ESP_LOGI(TAG,"%s",jsonGetBase64());
+              mqtt_send_up_data(jsonGetBase64());              
+              }
+            // init json block for new server, if same server as previous call, will aggregate into same block
+            strncpy(last_block, curr_block, sizeof(last_block) - 1);
+            jsonInit();
+            jsonAddObject_string("DEV",call->tag);
+            jsonAddObject_string("BUS",call->ad);
+            jsonAddObject_string("CHN","modbus");
+            jsonAddObject("data");
+            }
 
           ESP_LOGI(TAG, "Processing Modbus TCP call: %s:%s:%d:%d:%d", call->tag, call->ad, call->fn, call->rs, call->rn);
           // extract modbus call parameters from call->ad 
-          if(sscanf(call->ad, "%s:%s:%hu:%hu", server_type, server_host, &server_port, &server_unit_id) != 4) {
+          if(sscanf(call->ad, "%31[^':']:%31[^':']:%hu:%hu", server_type, server_host, &server_port, &server_unit_id) != 4) {
               ESP_LOGE(TAG, "Failed to parse Modbus TCP call address: %s", call->ad);
               jsonAddObject_printf("CFG_Error", "Failed to parse Modbus TCP call address: %s", call->ad);
               }
@@ -131,16 +171,18 @@ static void modbus_client_task(void *pvParameters) {
           }
         }
 
-        jsonCloseAll();        
+      // block opened in loop, should be called after processing all calls to ensure json is properly closed for mqtt transmission
+      // jsonClose();
+      jsonCloseAll(); // ensure all blocks are closed, in case of config errors that may cause block structure issues
 
-        // logs json, and base 64 encrypted json
-        ESP_LOGI(TAG,"%s",jsonGetBuffer());
-        ESP_LOGI(TAG,"%s",jsonGetBase64());
+      // logs json, and base 64 encrypted json
+      ESP_LOGI(TAG,"%s",jsonGetBuffer());
+      ESP_LOGI(TAG,"%s",jsonGetBase64());
 
-        mqtt_send_up_data(jsonGetBase64());
-        vTaskDelay(pdMS_TO_TICKS(MODBUS_TCP_RETRY_DELAY_MS));
+      mqtt_send_up_data(jsonGetBase64());
+      vTaskDelay(pdMS_TO_TICKS(MODBUS_TCP_RETRY_DELAY_MS));
 
-        ESP_LOGI(TAG,"%s", "Modbus client task delay terminated, restarting loop");
+      ESP_LOGI(TAG,"%s", "Modbus client task delay terminated, restarting loop");
     }
   }
 

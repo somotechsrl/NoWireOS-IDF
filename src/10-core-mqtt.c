@@ -53,6 +53,7 @@ static void mqtt_event_handler(void *handler_args, esp_event_base_t base, int32_
 
 void mqtt_send_up_data(const char *payload) {
     // esp_mqtt_client_handle_t client = esp_mqtt_client_init(NULL);
+    ESP_LOGI(TAG, "Sending UP Json Data: %s :: %s", topic_up, payload);
     esp_mqtt_client_publish(client, topic_up, payload, 0, 1, 0);
 }
 

@@ -189,6 +189,8 @@ uint16_t *modbus_tcp_read_json(int sock,uint8_t unit_id, uint8_t func, uint16_t 
         }
     }
 
+    jsonClose();
+
     return response;
 }
 
