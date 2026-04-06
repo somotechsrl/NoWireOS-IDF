@@ -46,10 +46,9 @@ uint16_t comma[JLEVELS], level;
 // decoder must use it
 #define XKEY 0xf1
 
-// Resets all buffers
-void jsonClear() {
+void jsonInit() {
 
-  // intialize buffer pointer and levels
+    // intialize buffer pointer and levels
   rp = r;
   level = 0;
 
@@ -59,12 +58,6 @@ void jsonClear() {
   memset(comma, 0, sizeof(comma));
   memset(jclose, 0, sizeof(jclose));
 
-}
-
-void jsonInit() {
-
-  jsonClear();
-  
   // opens Json
   level=1;
   // compressed json doesn't send first and last '{}'
@@ -91,7 +84,7 @@ const char *jsonGetBase64() {
   static unsigned char b64buffer[BUFSIZE];
   // encrypts before send
   for(int i=0;i<rp-r;i++) r[i]=r[i] ^ XKEY;
-  mbedtls_base64_encode(b64buffer, sizeof(b64buffer), &olen, rp, rp - r);
+  mbedtls_base64_encode(b64buffer, sizeof(b64buffer), &olen, (unsigned char*)rp, rp - r);
   ESP_LOGI(TAG,"Encrypted Size: %d -- Base64 size %d",rp-r,olen);
   return (char *)b64buffer;
 }

@@ -4,7 +4,6 @@
 // ****************************
 // src/10-json-encoder.c prototypes
 // ****************************
-void jsonClear();
 void jsonInit();
 const char *jsonGetBuffer();
 uint16_t jsonGetBufferSize();
