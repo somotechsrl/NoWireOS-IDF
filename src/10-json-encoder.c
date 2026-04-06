@@ -90,16 +90,16 @@ uint16_t jsonGetBufferSize() {
 const char *jsonGetCompressedBuffer() {
   return r;
 }
+uint16_t jsonGetCompressedSize() {
+  // simply return difference of pointers...
+  return rp - r;
+}
 
 // uses encryption
 const char *jsonGetEncryptedBuffer() {
   static unsigned char jcbuffer[BUFSIZE];
   for(int i=0;i<rp-r;i++) jcbuffer[i]=r[i] ^ XKEY;
   return (const char *)jcbuffer;
-}
-uint16_t jsonGetCompressedSize() {
-  // simply return difference of pointers...
-  return rp - r;
 }
 
 const char *jsonGetBase64() {
@@ -139,8 +139,8 @@ void jsonClose() {
 void jsonCloseAll() {
   if(!level) return;
   while (level > 0) jsonClose();
-  //strcat(s, "}");
-  //*rp++ = '}';
+  strcat(s, "}");
+  *rp++ = '}';
 }
 
 /**************************************************************************************
