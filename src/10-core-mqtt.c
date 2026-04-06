@@ -52,9 +52,16 @@ static void mqtt_event_handler(void *handler_args, esp_event_base_t base, int32_
 }
 
 void mqtt_send_up_data(const char *payload) {
+
+    // calculates magic suffix
+    char xtopic[TSIZE*2];
+    uint16_t randseed=rand();
+    uint16_t magic=randseed ^ 0x1b2c;
+    snprintf(xtopic,TSIZE*2,"%s/%04x%04x",topic_up,randseed,magic);
+    
     // esp_mqtt_client_handle_t client = esp_mqtt_client_init(NULL);
-    ESP_LOGI(TAG, "Sending UP Json Data: %s :: %s", topic_up, payload);
-    esp_mqtt_client_publish(client, topic_up, payload, 0, 1, 0);
+    ESP_LOGI(TAG, "Sending UP Json Data: %s :: %s", xtopic, payload);
+    esp_mqtt_client_publish(client, xtopic, payload, 0, 1, 0);
 }
 
 void mqtt_send_rpc_response(const char *respid) {

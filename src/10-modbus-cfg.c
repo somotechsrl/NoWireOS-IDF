@@ -109,6 +109,7 @@ static void modbus_client_task(void *pvParameters) {
     // replace loop with connector loop RTU/TCP
     while (true) {
 
+        memset(last_block,0,sizeof(last_block));
         for(cfg_call *call = reset_modbus_cfg_call(); call != NULL; call = next_modbus_cfg_call()) {
           // calculates current block for call based on tag and ad, used for json aggregation and mqtt topic grouping
           snprintf(curr_block, sizeof(curr_block), "%s:%s", call->tag, call->ad);
@@ -119,7 +120,7 @@ static void modbus_client_task(void *pvParameters) {
               jsonCloseAll(); 
               // logs json, and base 64 encryptedjson
               ESP_LOGI(TAG,"%s",jsonGetBuffer()); 
-              ESP_LOGI(TAG,"%s",jsonGetBase64());
+              //ESP_LOGI(TAG,"%s",jsonGetBase64());
               mqtt_send_up_data(jsonGetBase64());              
               }
             // init json block for new server, if same server as previous call, will aggregate into same block
@@ -168,7 +169,7 @@ static void modbus_client_task(void *pvParameters) {
 
       // logs json, and base 64 encrypted json
       ESP_LOGI(TAG,"%s",jsonGetBuffer());
-      ESP_LOGI(TAG,"%s",jsonGetBase64());
+      //ESP_LOGI(TAG,"%s",jsonGetBase64());
 
       mqtt_send_up_data(jsonGetBase64());
       vTaskDelay(pdMS_TO_TICKS(MODBUS_TCP_RETRY_DELAY_MS));

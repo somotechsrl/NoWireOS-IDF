@@ -40,11 +40,12 @@ extern esp_chip_info_t chip_info;
 extern bool led_blink_enabled;
 
 // Modbus configuration entry
+#define XTAG 32
 #define MODBUS_CONFIGS 100
 
 typedef struct {
-  char tag[32];
-  char ad[32];
+  char tag[XTAG];
+  char ad[XTAG];
   uint16_t rs;
   uint8_t fn, rn;
 } cfg_call;

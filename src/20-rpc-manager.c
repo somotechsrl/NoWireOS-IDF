@@ -141,6 +141,7 @@ void rpcManage(const char *payload, bool sync) {
 
   // After RPC calls evetal trigger
   if(trigger_task_handle) {
+    vTaskDelay(100);
     ESP_LOGI(TAG, "Triggering task handle: %p", trigger_task_handle);
     xTaskAbortDelay(trigger_task_handle);
     }

@@ -48,21 +48,18 @@ uint16_t comma[JLEVELS], level;
 
 void jsonInit() {
 
-    // intialize buffer pointer and levels
-  rp = r;
-  level = 0;
-
   // clears all buffers
+  rp=r;
   memset(s, 0, sizeof(s));
-  memset(r, 0, sizeof(s));
+  memset(r, 0, sizeof(r));
   memset(comma, 0, sizeof(comma));
   memset(jclose, 0, sizeof(jclose));
 
   // opens Json
   level=1;
-  // compressed json doesn't send first and last '{}'
-  //*rp++ = '{'; 
+  *rp++='{';
   strcpy(s, "{");
+
 }
 
 // print comma for level (autoicrement)
@@ -79,14 +76,23 @@ uint16_t jsonGetBufferSize() {
   return strlen(s);
 }
 
+static unsigned char eb[BUFSIZE];
+static unsigned char b64[BUFSIZE];
 const char *jsonGetBase64() {
+
+  int bsize=rp-r;
+
+  // cleanup
+  memset(eb,0,sizeof(eb));
+  memset(b64,0,sizeof(b64));
+
+  // simple encrypt before send
+  for(int i=0;i<bsize;i++) eb[i]=r[i]^XKEY;
+  
   size_t olen;
-  static unsigned char b64buffer[BUFSIZE];
-  // encrypts before send
-  for(int i=0;i<rp-r;i++) r[i]=r[i] ^ XKEY;
-  mbedtls_base64_encode(b64buffer, sizeof(b64buffer), &olen, (unsigned char*)rp, rp - r);
-  ESP_LOGI(TAG,"Encrypted Size: %d -- Base64 size %d",rp-r,olen);
-  return (char *)b64buffer;
+  mbedtls_base64_encode(b64, sizeof(b64), &olen,eb,bsize);
+  ESP_LOGI(TAG,"Encrypted Size: %d -- Base64 size %d",bsize,olen);
+  return (char *)b64;
 }
 
 // binary buffer add function
@@ -117,8 +123,8 @@ void jsonClose() {
 void jsonCloseAll() {
   if(!level) return;
   while (level > 0) jsonClose();
+  *rp++='}';
   strcat(s, "}");
-  *rp++ = '}';
 }
 
 /**************************************************************************************
