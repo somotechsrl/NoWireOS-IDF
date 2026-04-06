@@ -114,8 +114,9 @@ static void modbus_client_task(void *pvParameters) {
           snprintf(curr_block, sizeof(curr_block), "%s:%s", call->tag, call->ad);
           // senses block change based on tag and ad, if same block as previous call, will aggregate into same json block, if different block, will close previous block and start new block for new server
           if(strcmp(curr_block, last_block) != 0) {
+            // close opened block
             if(strlen(last_block) > 0) {
-              jsonCloseAll(); // close previous block if new block is different
+              jsonCloseAll(); 
               // logs json, and base 64 encryptedjson
               ESP_LOGI(TAG,"%s",jsonGetBuffer()); 
               ESP_LOGI(TAG,"%s",jsonGetBase64());
@@ -163,7 +164,6 @@ static void modbus_client_task(void *pvParameters) {
         }
 
       // block opened in loop, should be called after processing all calls to ensure json is properly closed for mqtt transmission
-      // jsonClose();
       jsonCloseAll(); // ensure all blocks are closed, in case of config errors that may cause block structure issues
 
       // logs json, and base 64 encrypted json

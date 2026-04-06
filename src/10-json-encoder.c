@@ -5,6 +5,7 @@
 
 
 // Json formatting utilities
+#define TAG "JSON"
 #define JLEVELS 10
 static char r[BUFSIZE], *rp;
 static char s[BUFSIZE];
@@ -106,6 +107,7 @@ const char *jsonGetBase64() {
   unsigned char *jb=(unsigned char *)jsonGetEncryptedBuffer();
   static unsigned char b64buffer[BUFSIZE];
   mbedtls_base64_encode(b64buffer, sizeof(b64buffer), &olen, jb, rp - r);
+  ESP_LOGI(TAG,"Encrypted Size: %d -- Base64 size %d",rp-r,olen);
   return (char *)b64buffer;
 }
 
@@ -137,8 +139,8 @@ void jsonClose() {
 void jsonCloseAll() {
   if(!level) return;
   while (level > 0) jsonClose();
-  strcat(s, "}");
-  *rp++ = '}';
+  //strcat(s, "}");
+  //*rp++ = '}';
 }
 
 /**************************************************************************************
