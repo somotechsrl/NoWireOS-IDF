@@ -27,7 +27,7 @@ static int getCommandID(const char *rpcmd) {
 }
 
 // Work with string which is more efficent
-
+static char *p,rpcb[BUFTINY];
 void rpcManage(const char *payload, bool sync) {
 
   ESP_LOGI(TAG, "Received: %s", payload);
@@ -36,12 +36,12 @@ void rpcManage(const char *payload, bool sync) {
   TaskHandle_t trigger_task_handle = NULL;
 
   // extracts ID and Command
-  char *p,rpcb[BUFTINY];
+  char *st;
   strcpy(rpcb, payload);
 
-  char *request_id = (p=strtok(rpcb,"|"))!=NULL ? p : "";
-  char *rpccommand = (p=strtok(NULL,"|"))!=NULL ? p : "";
-  char *rpc_params = (p=strtok(NULL,"|"))!=NULL ? p : "";
+  char *request_id = (p=strtok_r(rpcb,"|",&st))!=NULL ? p : "";
+  char *rpccommand = (p=strtok_r(NULL,"|",&st))!=NULL ? p : "";
+  char *rpc_params = (p=strtok_r(NULL,"|",&st))!=NULL ? p : "";
 
   char respid[BUFTINY];
   snprintf(respid, sizeof(respid), "R%s", request_id);

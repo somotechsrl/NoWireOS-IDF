@@ -41,6 +41,7 @@ extern bool led_blink_enabled;
 
 // Modbus configuration entry
 #define MODBUS_CONFIGS 100
+
 typedef struct {
   char tag[32];
   char ad[32];

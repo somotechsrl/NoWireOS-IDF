@@ -175,7 +175,7 @@ uint16_t *modbus_tcp_read_json(int sock,uint8_t unit_id, uint8_t func, uint16_t 
 
     uint16_t *response;
     char jobjectid[64];
-    sprintf(jobjectid,"r%04x",start_address);
+    sprintf(jobjectid,"x%04x",start_address);
 
     jsonAddArray(jobjectid);
     jsonAddValue_uint8_t(func);

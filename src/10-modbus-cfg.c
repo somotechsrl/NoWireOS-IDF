@@ -26,7 +26,7 @@ static void add_modbus_cfg_call(const char *tag, const char *ad, uint8_t fn, uin
   for (uint8_t i = 0; i < modbus_cfg.ncalls; i++) {
     if (strcmp(modbus_cfg.calls[i].tag, tag) == 0 && strcmp(modbus_cfg.calls[i].ad, ad) == 0 && modbus_cfg.calls[i].fn == fn && modbus_cfg.calls[i].rs == rs && modbus_cfg.calls[i].rn == rn) {
       ESP_LOGW(TAG, "Modbus call tag '%s;%s;%d;%d;%d' exists", tag, ad, fn, rs, rn);
-      jsonAddValue_printf("Modbus call tag %s;%s;%d;%d;%d exixts", tag, ad, fn, rs, rn);
+      jsonAddValue_printf("Modbus call tag %s;%s;%d;%d;%d exists", tag, ad, fn, rs, rn);
       return;
     }
   }
@@ -41,26 +41,28 @@ static void add_modbus_cfg_call(const char *tag, const char *ad, uint8_t fn, uin
 }
 
 // expects params in format: tag,ad,fn,rs,rn
-char tag[32], ad[32];
-uint8_t fn, rn;
-uint16_t rs;
-char rs_str[BUFSIZE];
-
+// allocated in heap to avoi stack overflow
 void addModbusAggregatedCall(const char *params) {
+
+  char tag[32], ad[32];
+  char rs_str[BUFTINY];
+  uint8_t fn, rn;
+  uint16_t rs;
 
   jsonAddObject_printf("CFG_STRING",params);
   jsonAddArray("CFG_RESULT");
  
   // typical format for aggregated call: tag;ad;fn;rs1:rn1,rs2:rn2,rs3:rn3,... where rs is starting register and rn is number of registers to read, allows for batch processing of multiple registers in one call for more efficient transmission and processing in modbus client task loop
   // splits single aggregated call with comma separated registers into multiple calls with same tag, ad, fn, but different rs and rn, then adds each call to config for processing in modbus client task loop 
-  memset(rs_str,0,sizeof(rs_str));
-  if (sscanf(params, "%31[^;];%31[^;];%hhu;%31[^;]s", tag, ad, &fn, rs_str) != 4) {
+  if (sscanf(params, "%31[^;];%31[^;];%hhu;%511[^;]s", tag, ad, &fn, rs_str) != 4) {
     ESP_LOGW(TAG, "Invalid params: %s", params);
     jsonAddValue_printf("Invalid params: %s", params);
     return; 
     }
+
   // explodes rs_str into individual register sets, separated by comma, in format rs:rn, then adds each call to config with same tag, ad, fn, but different rs and rn for each register set, allows for batch processing of multiple registers in one call for more efficient transmission and processing in modbus client task loop
-  char *token = strtok((char *)rs_str, ",");
+  ESP_LOGW(TAG, "Scanning regset: %s", rs_str);
+  char *st,*token = strtok_r((char *)rs_str, ",",&st);
   while (token != NULL) {
     if (sscanf(token, "%hu:%hhu", &rs, &rn) == 2) {
       add_modbus_cfg_call(tag, ad, fn, rs, rn);
@@ -68,7 +70,7 @@ void addModbusAggregatedCall(const char *params) {
       ESP_LOGW(TAG, "Invalid register set: %s", token);
       jsonAddValue_printf("Invalid register set: %s", token);
     }
-    token = strtok(NULL, ",");
+    token = strtok_r(NULL, ",",&st);
    }
 
 jsonClose();
