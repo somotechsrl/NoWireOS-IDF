@@ -86,21 +86,11 @@ uint16_t jsonGetBufferSize() {
   return strlen(s);
 }
 
-
-// Encrypt generated buffer
-static const char *jsonGetEncryptedBuffer() {
-  for(int i=0;i<rp-r;i++) r[i]=r[i] ^ XKEY;
-  return (const char *)r;
-}
-static uint16_t jsonGetEncryptedSyze() {
-  // simply return difference of pointers...
-  return rp - r;
-}
-
 const char *jsonGetBase64() {
   size_t olen;
-  getEncryptedBuffer();
   static unsigned char b64buffer[BUFSIZE];
+  // encrypts before send
+  for(int i=0;i<rp-r;i++) r[i]=r[i] ^ XKEY;
   mbedtls_base64_encode(b64buffer, sizeof(b64buffer), &olen, rp, rp - r);
   ESP_LOGI(TAG,"Encrypted Size: %d -- Base64 size %d",rp-r,olen);
   return (char *)b64buffer;
