@@ -4,7 +4,6 @@
 // ****************************
 // src/10-modbus-cfg.c prototypes
 // ****************************
-void addModbusSingleCall(const char *params);
 void addModbusAggregatedCall(const char *params);
 void modbus_init(void);
 #endif

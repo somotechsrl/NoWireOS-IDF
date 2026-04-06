@@ -17,16 +17,16 @@ static modbus_config modbus_cfg;
 static void add_modbus_cfg_call(const char *tag, const char *ad, uint8_t fn, uint16_t rs, uint8_t rn) {
 
   if (modbus_cfg.ncalls >= MODBUS_CONFIGS) {
-    ESP_LOGW(TAG, "Maximum number of Modbus calls reached");
-    jsonAddObject_printf("CFG_Error", "Maximum number of Modbus calls reached");
+    ESP_LOGW(TAG, "Maximum number of calls");
+    jsonAddValue_printf("ERROR: %s;%s;%d;%d;%d maxcalls", tag, ad, fn, rs, rn);
     return;
   }
 
   // checks if tag already exists
   for (uint8_t i = 0; i < modbus_cfg.ncalls; i++) {
     if (strcmp(modbus_cfg.calls[i].tag, tag) == 0 && strcmp(modbus_cfg.calls[i].ad, ad) == 0 && modbus_cfg.calls[i].fn == fn && modbus_cfg.calls[i].rs == rs && modbus_cfg.calls[i].rn == rn) {
-      ESP_LOGW(TAG, "Modbus call with tag '%s;%s;%d;%d;%d' already exists", tag, ad, fn, rs, rn);
-      jsonAddObject_printf("CFG_Error", "Modbus call with tag '%s;%s;%d;%d;%d' already exists", tag, ad, fn, rs, rn);
+      ESP_LOGW(TAG, "Modbus call tag '%s;%s;%d;%d;%d' exists", tag, ad, fn, rs, rn);
+      jsonAddValue_printf("Modbus call tag %s;%s;%d;%d;%d exixts", tag, ad, fn, rs, rn);
       return;
     }
   }
@@ -37,37 +37,26 @@ static void add_modbus_cfg_call(const char *tag, const char *ad, uint8_t fn, uin
   call->rs = rs;
   call->fn = fn;
   call->rn = rn;
-  jsonAddObject_printf("CFG_Done", "Modbus call added: '%s;%s;%d;%d;%d'", tag, ad, fn, rs, rn);
+  jsonAddValue_printf("Added: %s;%s;%d;%d;%d", tag, ad, fn, rs, rn);
 }
 
-// old system -- RPC one call for each register, new system will send all calls in config in one json block for more efficient transmission and processing, this is kept for backward compatibility with old RPC system, but will be deprecated in future in favor of addModbusAggregatedCall which will add calls to current json block for batch processing and transmission
-void addModbusSingleCall(const char *params) {
-  // expects params in format: tag,ad,fn,rs,rn
-  char tag[32], ad[32];
-  uint8_t fn, rn;
-  uint16_t rs;
-
-  if (sscanf(params, "%31[^;];%31[^;];%hhu;%hu;%hhu", tag, ad, &fn, &rs, &rn) != 5) {
-    ESP_LOGW(TAG, "Invalid parameters for Modbus call: %s", params);
-    jsonAddValue_printf("Invalid parameters for Modbus call: %s", params);
-    return;
-  }
-
-  add_modbus_cfg_call(tag, ad, fn, rs, rn);
-}
+// expects params in format: tag,ad,fn,rs,rn
+char tag[32], ad[32];
+uint8_t fn, rn;
+uint16_t rs;
+char rs_str[BUFSIZE];
 
 void addModbusAggregatedCall(const char *params) {
-  // expects params in format: tag,ad,fn,rs,rn
-  char tag[32], ad[32];
-  uint8_t fn, rn;
-  uint16_t rs;
-  char rs_str[BUFTINY];
 
+  jsonAddObject_printf("CFG_STRING",params);
+  jsonAddArray("CFG_RESULT");
+ 
   // typical format for aggregated call: tag;ad;fn;rs1:rn1,rs2:rn2,rs3:rn3,... where rs is starting register and rn is number of registers to read, allows for batch processing of multiple registers in one call for more efficient transmission and processing in modbus client task loop
   // splits single aggregated call with comma separated registers into multiple calls with same tag, ad, fn, but different rs and rn, then adds each call to config for processing in modbus client task loop 
+  memset(rs_str,0,sizeof(rs_str));
   if (sscanf(params, "%31[^;];%31[^;];%hhu;%31[^;]s", tag, ad, &fn, rs_str) != 4) {
-    ESP_LOGW(TAG, "Invalid parameters for Modbus aggregated call: %s", params);
-    jsonAddValue_printf("Invalid parameters for Modbus aggregated call: %s", params);
+    ESP_LOGW(TAG, "Invalid params: %s", params);
+    jsonAddValue_printf("Invalid params: %s", params);
     return; 
     }
   // explodes rs_str into individual register sets, separated by comma, in format rs:rn, then adds each call to config with same tag, ad, fn, but different rs and rn for each register set, allows for batch processing of multiple registers in one call for more efficient transmission and processing in modbus client task loop
@@ -76,15 +65,16 @@ void addModbusAggregatedCall(const char *params) {
     if (sscanf(token, "%hu:%hhu", &rs, &rn) == 2) {
       add_modbus_cfg_call(tag, ad, fn, rs, rn);
     } else {
-      ESP_LOGW(TAG, "Invalid register set in parameters for Modbus call: %s", token);
-      jsonAddValue_printf("Invalid register set in parameters for Modbus call: %s", token);
+      ESP_LOGW(TAG, "Invalid register set: %s", token);
+      jsonAddValue_printf("Invalid register set: %s", token);
     }
     token = strtok(NULL, ",");
-  }
+   }
+
+jsonClose();
 }
 
 static uint8_t mb_call_index = 0;
-
 static cfg_call *reset_modbus_cfg_call() {
   mb_call_index=0; // reset index for new retrieval
   if (mb_call_index < modbus_cfg.ncalls) {
@@ -94,7 +84,6 @@ static cfg_call *reset_modbus_cfg_call() {
     return NULL;
   }
 }
-
 static cfg_call *next_modbus_cfg_call() {
   if (mb_call_index < modbus_cfg.ncalls) {
     ESP_LOGI(TAG, "Getting call #%d: %s:%s;%d;%d;%d", mb_call_index, modbus_cfg.calls[mb_call_index].tag, modbus_cfg.calls[mb_call_index].ad, modbus_cfg.calls[mb_call_index].fn, modbus_cfg.calls[mb_call_index].rs, modbus_cfg.calls[mb_call_index].rn);
