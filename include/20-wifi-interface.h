@@ -4,5 +4,5 @@
 // ****************************
 // src/20-wifi-interface.c prototypes
 // ****************************
-void wifi_interface_init(void);
+void wifi_init_config(void);
 #endif
