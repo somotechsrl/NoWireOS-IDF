@@ -1,121 +1,205 @@
+#include <string.h>
+#include <stdlib.h>
+#include <stdio.h>
+#include "esp_log.h"
 #include "esp_wifi.h"
-#include "esp_http_server.h"
 #include "esp_event.h"
 #include "nvs_flash.h"
-#include "esp_log.h"
-#include <string.h>
+#include "esp_netif.h"
+#include "esp_http_server.h"
 
-static const char *TAG = "WiFi Config";
-static httpd_handle_t server = NULL;
+static const char *TAG = "wifi_interface";
+static httpd_handle_t webserver = NULL;
 
-// HTML for WiFi configuration page
-const char wifi_config_html[] = R"(
-<!DOCTYPE html>
-<html>
-<head>
-    <title>WiFi Configuration</title>
-    <style>
-        body { font-family: Arial; margin: 20px; }
-        input { padding: 8px; margin: 5px; width: 200px; }
-        button { padding: 10px 20px; background: #007bff; color: white; border: none; cursor: pointer; }
-        button:hover { background: #0056b3; }
-    </style>
-</head>
-<body>
-    <h1>WiFi Configuration</h1>
-    <form id="wifiForm">
-        <label>SSID:</label><br>
-        <input type="text" id="ssid" required><br><br>
-        <label>Password:</label><br>
-        <input type="password" id="password" required><br><br>
-        <button type="submit">Connect</button>
-    </form>
-    <p id="status"></p>
-    <script>
-        document.getElementById('wifiForm').onsubmit = async (e) => {
-            e.preventDefault();
-            const ssid = document.getElementById('ssid').value;
-            const password = document.getElementById('password').value;
-            const response = await fetch('/api/wifi', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ ssid, password })
-            });
-            const result = await response.json();
-            document.getElementById('status').textContent = result.message;
-        };
-    </script>
-</body>
-</html>
-)";
+static const char *wifi_config_page =
+    "<!DOCTYPE html>"
+    "<html>"
+    "<head><meta charset=\"UTF-8\"><title>ESP WiFi Config</title></head>"
+    "<body>"
+    "<h2>Configure WiFi</h2>"
+    "<form method=\"POST\" action=\"/configure\">"
+    "SSID:<br><input type=\"text\" name=\"ssid\" maxlength=\"32\"><br>"
+    "Password:<br><input type=\"password\" name=\"pass\" maxlength=\"64\"><br>"
+    "<input type=\"submit\" value=\"Save\">"
+    "</form>"
+    "</body>"
+    "</html>";
 
-static esp_err_t wifi_config_get_handler(httpd_req_t *req) {
-    httpd_resp_set_type(req, "text/html");
-    httpd_resp_send(req, wifi_config_html, strlen(wifi_config_html));
-    return ESP_OK;
+static void url_decode(const char *src, char *dst, size_t dst_size)
+{
+    size_t di = 0;
+    while (*src && di + 1 < dst_size) {
+        if (*src == '+') {
+            dst[di++] = ' ';
+        } else if (*src == '%' && src[1] && src[2]) {
+            char hex[3] = { src[1], src[2], '\0' };
+            dst[di++] = (char) strtol(hex, NULL, 16);
+            src += 2;
+        } else {
+            dst[di++] = *src;
+        }
+        src++;
+    }
+    dst[di] = '\0';
 }
 
-static esp_err_t wifi_config_post_handler(httpd_req_t *req) {
-    char buf[256];
-    int ret = httpd_req_recv(req, buf, sizeof(buf) - 1);
-    if (ret <= 0) return ESP_FAIL;
-    buf[ret] = '\0';
+static void parse_form_field(const char *body, const char *key, char *dst, size_t dst_size)
+{
+    const char *pos = strstr(body, key);
+    if (!pos) {
+        dst[0] = '\0';
+        return;
+    }
+    pos += strlen(key);
+    if (*pos != '=') {
+        dst[0] = '\0';
+        return;
+    }
+    pos++;
+    const char *end = strchr(pos, '&');
+    size_t len = end ? (size_t)(end - pos) : strlen(pos);
+    char tmp[128];
+    if (len >= sizeof(tmp)) {
+        len = sizeof(tmp) - 1;
+    }
+    memcpy(tmp, pos, len);
+    tmp[len] = '\0';
+    url_decode(tmp, dst, dst_size);
+}
 
-    char ssid[32] = {0}, password[64] = {0};
-    sscanf(buf, "{\"ssid\":\"%31[^\"]\",\"password\":\"%63[^\"]\"}", ssid, password);
+static esp_err_t configure_wifi_sta(const char *ssid, const char *password)
+{
+    wifi_config_t wifi_config = { 0 };
+    strlcpy((char *)wifi_config.sta.ssid, ssid, sizeof(wifi_config.sta.ssid));
+    strlcpy((char *)wifi_config.sta.password, password, sizeof(wifi_config.sta.password));
 
-    wifi_config_t wifi_config = {};
-    strcpy((char *)wifi_config.sta.ssid, ssid);
-    strcpy((char *)wifi_config.sta.password, password);
-
+    ESP_ERROR_CHECK(esp_wifi_set_mode(WIFI_MODE_APSTA));
     ESP_ERROR_CHECK(esp_wifi_set_config(WIFI_IF_STA, &wifi_config));
-    ESP_ERROR_CHECK(esp_wifi_connect());
+    ESP_ERROR_CHECK(esp_wifi_disconnect());
+    return esp_wifi_connect();
+}
 
-    const char *response = "{\"message\":\"Connecting...\"}";
-    httpd_resp_set_type(req, "application/json");
-    httpd_resp_send(req, response, strlen(response));
+static esp_err_t get_handler(httpd_req_t *req)
+{
+    httpd_resp_set_type(req, "text/html");
+    httpd_resp_send(req, wifi_config_page, strlen(wifi_config_page));
     return ESP_OK;
 }
 
-void start_wifi_config_ap(void) {
-    ESP_ERROR_CHECK(nvs_flash_init());
-    ESP_ERROR_CHECK(esp_netif_init());
-    ESP_ERROR_CHECK(esp_event_loop_create_default());
+static esp_err_t post_handler(httpd_req_t *req)
+{
+    int len = req->content_len;
+    if (len <= 0 || len > 1024) {
+        httpd_resp_send_err(req, HTTPD_400_BAD_REQUEST, "Invalid content length");
+        return ESP_FAIL;
+    }
 
+    char *buf = calloc(1, len + 1);
+    if (!buf) {
+        httpd_resp_send_err(req, HTTPD_500_INTERNAL_SERVER_ERROR, "Memory allocation failed");
+        return ESP_FAIL;
+    }
+
+    int received = 0;
+    while (received < len) {
+        int ret = httpd_req_recv(req, buf + received, len - received);
+        if (ret <= 0) {
+            free(buf);
+            httpd_resp_send_err(req, HTTPD_500_INTERNAL_SERVER_ERROR, "Receive failed");
+            return ESP_FAIL;
+        }
+        received += ret;
+    }
+
+    char ssid[33];
+    char pass[65];
+    parse_form_field(buf, "ssid", ssid, sizeof(ssid));
+    parse_form_field(buf, "pass", pass, sizeof(pass));
+    free(buf);
+
+    if (ssid[0] == '\0') {
+        httpd_resp_send_err(req, HTTPD_400_BAD_REQUEST, "SSID required");
+        return ESP_FAIL;
+    }
+
+    esp_err_t err = configure_wifi_sta(ssid, pass);
+    if (err != ESP_OK) {
+        httpd_resp_send_err(req, HTTPD_500_INTERNAL_SERVER_ERROR, "WiFi configuration failed");
+        return ESP_FAIL;
+    }
+
+    const char *resp = "<!DOCTYPE html><html><body><h2>WiFi configured</h2>"
+                       "<p>Trying to connect to the network.</p>"
+                       "</body></html>";
+    httpd_resp_set_type(req, "text/html");
+    httpd_resp_send(req, resp, strlen(resp));
+    return ESP_OK;
+}
+
+static const httpd_uri_t uri_get = {
+    .uri       = "/",
+    .method    = HTTP_GET,
+    .handler   = get_handler,
+    .user_ctx  = NULL
+};
+
+static const httpd_uri_t uri_post = {
+    .uri       = "/configure",
+    .method    = HTTP_POST,
+    .handler   = post_handler,
+    .user_ctx  = NULL
+};
+
+static esp_err_t start_webserver(void)
+{
+    httpd_config_t config = HTTPD_DEFAULT_CONFIG();
+    config.max_uri_handlers = 4;
+
+    if (httpd_start(&webserver, &config) != ESP_OK) {
+        ESP_LOGE(TAG, "Failed to start HTTP server");
+        return ESP_FAIL;
+    }
+
+    httpd_register_uri_handler(webserver, &uri_get);
+    httpd_register_uri_handler(webserver, &uri_post);
+    return ESP_OK;
+}
+
+static void wifi_init_ap(void)
+{
+    esp_netif_init();
+    esp_event_loop_create_default();
     esp_netif_create_default_wifi_ap();
+    esp_netif_create_default_wifi_sta();
+
     wifi_init_config_t cfg = WIFI_INIT_CONFIG_DEFAULT();
     ESP_ERROR_CHECK(esp_wifi_init(&cfg));
-    ESP_ERROR_CHECK(esp_wifi_set_mode(WIFI_MODE_AP));
 
     wifi_config_t ap_config = {
         .ap = {
-            .ssid = "NoWireOS-Config",
-            .password = "12345678",
+            .ssid = "ESP-WIFI-Config",
             .ssid_len = 0,
             .channel = 1,
-            .authmode = WIFI_AUTH_WPA2_PSK,
             .max_connection = 4,
+            .authmode = WIFI_AUTH_OPEN,
+            .ssid_hidden = 0,
         },
     };
+
+    ESP_ERROR_CHECK(esp_wifi_set_mode(WIFI_MODE_APSTA));
     ESP_ERROR_CHECK(esp_wifi_set_config(WIFI_IF_AP, &ap_config));
     ESP_ERROR_CHECK(esp_wifi_start());
+}
 
-    httpd_config_t config = HTTPD_DEFAULT_CONFIG();
-    ESP_ERROR_CHECK(httpd_start(&server, &config));
+void wifi_interface_init(void) {
+    esp_err_t ret = nvs_flash_init();
+    if (ret == ESP_ERR_NVS_NO_FREE_PAGES || ret == ESP_ERR_NVS_NEW_VERSION_FOUND) {
+        ESP_ERROR_CHECK(nvs_flash_erase());
+        ret = nvs_flash_init();
+    }
+    ESP_ERROR_CHECK(ret);
 
-    httpd_uri_t uri_get = {
-        .uri = "/",
-        .method = HTTP_GET,
-        .handler = wifi_config_get_handler,
-    };
-    httpd_register_uri_handler(server, &uri_get);
-
-    httpd_uri_t uri_post = {
-        .uri = "/api/wifi",
-        .method = HTTP_POST,
-        .handler = wifi_config_post_handler,
-    };
-    httpd_register_uri_handler(server, &uri_post);
-
-    ESP_LOGI(TAG, "WiFi Config AP started. Connect to 'NoWireOS-Config'");
+    wifi_init_ap();
+    ESP_ERROR_CHECK(start_webserver());
+    ESP_LOGI(TAG, "WiFi config interface running on SSID: ESP-WIFI-Config");
 }
