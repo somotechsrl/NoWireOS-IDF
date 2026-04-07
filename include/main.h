@@ -39,23 +39,6 @@ extern esp_chip_info_t chip_info;
 
 extern bool led_blink_enabled;
 
-// Modbus configuration entry
-#define XTAG 32
-#define MODBUS_CONFIGS 100
-
-typedef struct {
-  char tag[XTAG];
-  char ad[XTAG];
-  uint16_t rs;
-  uint8_t fn, rn;
-} cfg_call;
-
-// Modbus Configuration block
-typedef struct {
-  uint8_t ncalls;
-  // max MODBUS_CONFIG  calls... -- see HAL.h
-  cfg_call calls[MODBUS_CONFIGS];
-} modbus_config;
 
 extern TaskHandle_t modbus_client_task_handle;
 

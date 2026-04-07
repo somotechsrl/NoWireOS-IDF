@@ -10,20 +10,41 @@
 #include "10-modbus-tcp.h"
 #include "10-modbus-rtu.h"  
 
+// Modbus configuration entry
+#define XTAG 32
+#define MODBUS_CONFIGS 20
+
+typedef struct {
+  char tag[XTAG];
+  char ad[XTAG];
+  uint16_t rs;
+  uint8_t fn, rn;
+} cfg_call;
+
+// Modbus Configuration block
+typedef struct {
+  uint8_t ncalls;
+  // max MODBUS_CONFIG  calls... -- see HAL.h
+  cfg_call calls[MODBUS_CONFIGS];
+} modbus_config;
+
+
 #define TAG "MODBUS_CFG"
 TaskHandle_t modbus_client_task_handle;
 static modbus_config modbus_cfg;
 
 static int amodbus_num=0;
-static char amodbus_cfg[MODBUS_CONFIGS][BUFSIZE];
+static char amodbus_cfg[MODBUS_CONFIGS][BUFTINY];
 
 void addModbusAggregatedCall(char *params) {
+
+  jsonAddObject_printf("CFG_STRING",params);
 
   // param is in the form dev_id;tpc:address:port:unit;function;r:n,r:n,r:n....
   // checks if we reached limit
   if(amodbus_num>=MODBUS_CONFIGS) {
     ESP_LOGE(TAG,"Maximum configs (%d) reached",amodbus_num);
-    jsonAddValue_printf("Maximum number of configs reached: %d",amodbus_num);
+    jsonAddObject_printf("CFG_RESULT","ERROR: Maximum number of configs reached: %d",amodbus_num);
     return;
     }
 
@@ -36,13 +57,13 @@ void addModbusAggregatedCall(char *params) {
   // splits single aggregated call with comma separated registers into multiple calls with same tag, ad, fn, but different rs and rn, then adds each call to config for processing in modbus client task loop 
   if (sscanf(params, "%31[^;];%31[^;];%hhu;%511[^;]s", tag, ad, &fn, rs_str) != 4) {
     ESP_LOGE(TAG, "Invalid params: %s", params);
-    jsonAddValue_printf("Invalid params: %s", params);
+    jsonAddObject_printf("CFG_RESULT","ERROR: Invalid params: %s", params);
     return; 
     }
 
   strcpy(amodbus_cfg[amodbus_num],params);
-  ESP_LOGW(TAG, "Added configuration: %s --> %s %s %d %s", params,tag,ad,fn,rs_str);
-  jsonAddValue_printf("Added configuration: %s --> %s %s %d %s", params,tag,ad,fn,rs_str);
+  ESP_LOGW(TAG, "Added configuration: %s",params);
+  jsonAddObject_printf("CFG_RESULT","Added configuration: %s", params);
   }
 
 static void add_modbus_cfg_call(const char *tag, const char *ad, uint8_t fn, uint16_t rs, uint8_t rn) {
