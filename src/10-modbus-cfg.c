@@ -14,6 +14,40 @@
 TaskHandle_t modbus_client_task_handle;
 static modbus_config modbus_cfg;
 
+static int amodbus_num=0;
+static char amodbus_cfg[MODBUS_CONFIGS][BUFSIZE];
+
+static void AddModbusAggregatedCall(char *params) {
+
+  // param is in the form dev_id;tpc:address:port:unit;function;r:n,r:n,r:n....
+  // checks if we reached limit
+  if(amodbus_num>=MODBUS_CONFIGS) {
+    ESP_LOGE(TAG,"Maximum configs (%d) reached",amodbus_num);
+    jsonAddValue_printf("Maximum number of configs reached: %d",amodbus_num);
+    return;
+    }
+
+  char tag[32], ad[32];
+  char rs_str[BUFTINY];
+  uint8_t fn, rn;
+  uint16_t rs;
+
+  // separates root values tag,ad,fn,registers
+   // typical format for aggregated call: tag;ad;fn;rs1:rn1,rs2:rn2,rs3:rn3,... where rs is starting register and rn is number of registers to read, allows for batch processing of multiple registers in one call for more efficient transmission and processing in modbus client task loop
+  // splits single aggregated call with comma separated registers into multiple calls with same tag, ad, fn, but different rs and rn, then adds each call to config for processing in modbus client task loop 
+  if (sscanf(params, "%31[^;];%31[^;];%hhu;%511[^;]s", tag, ad, &fn, rs_str) != 4) {
+    ESP_LOGE(TAG, "Invalid params: %s", params);
+    jsonAddValue_printf("Invalid params: %s", params);
+    return; 
+    }
+
+  strcpy(amodbus_cfg[amodbus_num],params);
+  ESP_LOGW(TAG, "Added configuration: %s", params);
+  jsonAddValue_printf("Added Configuration: %s", params);
+  }
+
+}
+
 static void add_modbus_cfg_call(const char *tag, const char *ad, uint8_t fn, uint16_t rs, uint8_t rn) {
 
   if (modbus_cfg.ncalls >= MODBUS_CONFIGS) {
@@ -42,7 +76,7 @@ static void add_modbus_cfg_call(const char *tag, const char *ad, uint8_t fn, uin
 
 // expects params in format: tag,ad,fn,rs,rn
 // allocated in heap to avoi stack overflow
-void addModbusAggregatedCall(const char *params) {
+void old_addModbusAggregatedCall(const char *params) {
 
   char tag[32], ad[32];
   char rs_str[BUFTINY];
