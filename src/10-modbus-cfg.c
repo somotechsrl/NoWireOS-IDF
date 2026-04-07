@@ -29,8 +29,7 @@ static void AddModbusAggregatedCall(char *params) {
 
   char tag[32], ad[32];
   char rs_str[BUFTINY];
-  uint8_t fn, rn;
-  uint16_t rs;
+  uint8_t fn;
 
   // separates root values tag,ad,fn,registers
    // typical format for aggregated call: tag;ad;fn;rs1:rn1,rs2:rn2,rs3:rn3,... where rs is starting register and rn is number of registers to read, allows for batch processing of multiple registers in one call for more efficient transmission and processing in modbus client task loop
@@ -42,11 +41,9 @@ static void AddModbusAggregatedCall(char *params) {
     }
 
   strcpy(amodbus_cfg[amodbus_num],params);
-  ESP_LOGW(TAG, "Added configuration: %s", params);
-  jsonAddValue_printf("Added Configuration: %s", params);
+  ESP_LOGW(TAG, "Added configuration: %s --> %s %s %d %s", params,tag,ad,fn,rs_str);
+  jsonAddValue_printf("Added configuration: %s --> %s %s %d %s", params,tag,ad,fn,rs_str););
   }
-
-}
 
 static void add_modbus_cfg_call(const char *tag, const char *ad, uint8_t fn, uint16_t rs, uint8_t rn) {
 
