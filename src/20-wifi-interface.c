@@ -74,8 +74,7 @@ static esp_err_t connect_handler(httpd_req_t *req)
     return ESP_OK;
 }
 
-void wifi_interface_init(void)
-{
+void wifi_interface_init(void) {
     esp_event_handler_register(WIFI_EVENT, ESP_EVENT_ANY_ID, &wifi_event_handler, NULL);
 
     httpd_config_t config = HTTPD_DEFAULT_CONFIG();
