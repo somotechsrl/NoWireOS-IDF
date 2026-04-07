@@ -17,7 +17,7 @@ static modbus_config modbus_cfg;
 static int amodbus_num=0;
 static char amodbus_cfg[MODBUS_CONFIGS][BUFSIZE];
 
-static void AddModbusAggregatedCall(char *params) {
+void addModbusAggregatedCall(char *params) {
 
   // param is in the form dev_id;tpc:address:port:unit;function;r:n,r:n,r:n....
   // checks if we reached limit
@@ -42,7 +42,7 @@ static void AddModbusAggregatedCall(char *params) {
 
   strcpy(amodbus_cfg[amodbus_num],params);
   ESP_LOGW(TAG, "Added configuration: %s --> %s %s %d %s", params,tag,ad,fn,rs_str);
-  jsonAddValue_printf("Added configuration: %s --> %s %s %d %s", params,tag,ad,fn,rs_str););
+  jsonAddValue_printf("Added configuration: %s --> %s %s %d %s", params,tag,ad,fn,rs_str);
   }
 
 static void add_modbus_cfg_call(const char *tag, const char *ad, uint8_t fn, uint16_t rs, uint8_t rn) {
