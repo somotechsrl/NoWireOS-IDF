@@ -14,7 +14,7 @@ void app_main() {
 
     wifi_init();
     mqtt_init();
-    modbus_init_sta();
+    modbus_init();
  
     // start web_server
     //start_web_server();
