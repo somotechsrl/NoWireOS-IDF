@@ -3,7 +3,6 @@
 #include "10-core-mqtt.h"
 #include "10-modbus-cfg.h"
 #include "30-utils.h"
-#include "10-watchdogs.h"
 
 
 void app_main() {
@@ -17,8 +16,7 @@ void app_main() {
     wifi_init();
     mqtt_init();
     modbus_init();
-    watchdog_init();
-
+ 
     // start web_server
     //start_web_server();
 

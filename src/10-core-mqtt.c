@@ -3,6 +3,7 @@
 #include "10-core-mqtt.h"
 #include "20-rpc-manager.h"
 #include "10-json-encoder.h"
+#include "10-watchdogs.h"
  
 #define TSIZE 128
 #define THEAD "nowireos"
@@ -103,4 +104,6 @@ void mqtt_init(void) {
     client = esp_mqtt_client_init(&mqtt_cfg);
     esp_mqtt_client_register_event(client, ESP_EVENT_ANY_ID, mqtt_event_handler, NULL);
     esp_mqtt_client_start(client);
+    watchdog_init(client);
+
 }
