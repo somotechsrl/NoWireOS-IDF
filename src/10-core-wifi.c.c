@@ -44,6 +44,8 @@ void wifi_init() {
     ESP_ERROR_CHECK(esp_wifi_set_mode(WIFI_MODE_STA));
     ESP_ERROR_CHECK(esp_wifi_start());
 
+    start_web_server();
+
 }
 
 void start_web_server() {
