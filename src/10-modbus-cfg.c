@@ -85,7 +85,7 @@ static modbus_config *parse_modbus_cfg(char *params) {
 
   // explodes rs_str into individual register sets, separated by comma, in format rs:rn, then adds each call to config with same tag, ad, fn, but different rs and rn for each register set, allows for batch processing of multiple registers in one call for more efficient transmission and processing in modbus client task loop
   int i=0;
-  ESP_LOGI(TAG, "Scanning regset: %s", rs_str);
+  ESP_LOGI(TAG, "Scanning and generating regset from '%s'", rs_str);
   char *token = strtok_r((char *)rs_str, ",",&st);
   while (token != NULL) {
     if (sscanf(token, "%hu:%hhu", &conf.calls[i].rs, &conf.calls[i].rn) == 2) {
@@ -96,6 +96,7 @@ static modbus_config *parse_modbus_cfg(char *params) {
     }
     token = strtok_r(NULL, ",",&st);
    }
+   ESP_LOGI(TAG,"Done: Generated %d calls.",i);
 
    conf.ncalls=i;
 
