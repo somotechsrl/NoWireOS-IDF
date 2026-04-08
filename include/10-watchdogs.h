@@ -4,7 +4,5 @@
 // ****************************
 // src/10-watchdogs.c prototypes
 // ****************************
-void watchdog_feed_ip(void);
-void watchdog_feed_mqtt(void);
-void watchdog_init(void);
+void watchdog_init(esp_mqtt_client_handle_t client);
 #endif
