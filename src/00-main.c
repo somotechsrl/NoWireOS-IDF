@@ -14,7 +14,7 @@ void app_main() {
     printf("%s\n", "Hello, NoWireOS!");
 
     //wifi_init();
-    wifi_provision_init();
+    wifi_init();
     mqtt_init();
     modbus_init();
  
