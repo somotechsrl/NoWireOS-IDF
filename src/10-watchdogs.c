@@ -35,6 +35,7 @@ static void mqtt_event_handler(void *handler_args, esp_event_base_t base, int32_
 }
 
 static bool check_ping(const char *host) {
+
     struct sockaddr_in addr;
     struct hostent *he = gethostbyname(host);
     if (!he) return false;
