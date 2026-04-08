@@ -15,6 +15,9 @@ void app_main() {
 
     //wifi_init();
     wifi_init();
+    //wifi_init_hard();
+
+    // network elated
     mqtt_init();
     modbus_init();
  

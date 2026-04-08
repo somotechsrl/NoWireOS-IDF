@@ -4,4 +4,5 @@
 // ****************************
 // src/20-wifi-provision.c prototypes
 // ****************************
+void wifi_init(void);
 #endif

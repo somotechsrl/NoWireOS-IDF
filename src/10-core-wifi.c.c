@@ -5,8 +5,8 @@
 #include "esp_log.h"
 #include "nvs_flash.h"
 
-#define WIFI_SSID      "your_ssid"
-#define WIFI_PASS      "your_password"
+#define WIFI_SSID      "DeepBlue"
+#define WIFI_PASS      "!eralottoluglio"
 #define WIFI_MAX_RETRY 5
 
 static EventGroupHandle_t wifi_event_group;
@@ -36,7 +36,7 @@ static void wifi_event_handler(void* arg, esp_event_base_t event_base,
     }
 }
 
-void wifi_init(void) {
+void wifi_init_hard(void) {
     wifi_event_group = xEventGroupCreate();
 
     ESP_ERROR_CHECK(esp_netif_init());
