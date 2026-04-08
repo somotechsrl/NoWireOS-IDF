@@ -4,7 +4,6 @@
 #include "20-modbus-svr.h"
 #include "30-utils.h"
 
-
 void app_main() {
 
  
@@ -13,7 +12,7 @@ void app_main() {
     printf("Device Serial: %s\n", mac_str);
     printf("%s\n", "Hello, NoWireOS!");
 
-    wifi_ap_init();
+    wifi_init_sta();
     mqtt_init();
     modbus_init();
  

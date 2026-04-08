@@ -4,5 +4,5 @@
 // ****************************
 // src/10-core-wifi.c.c prototypes
 // ****************************
-void wifi_ap_init(void);
+void wifi_init_sta(void);
 #endif

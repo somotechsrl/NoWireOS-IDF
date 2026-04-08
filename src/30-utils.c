@@ -2,6 +2,7 @@
 
 // mac address array and string
 uint8_t mac[6];
+char ipaddr[16];
 char mac_str[20];
 char serial_str[16];
 esp_chip_info_t chip_info;
