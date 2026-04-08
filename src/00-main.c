@@ -12,7 +12,7 @@ void app_main() {
     printf("Device Serial: %s\n", mac_str);
     printf("%s\n", "Hello, NoWireOS!");
 
-    wifi_init_sta();
+    wifi_init();
     mqtt_init();
     modbus_init();
  
