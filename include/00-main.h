@@ -4,5 +4,5 @@
 // ****************************
 // src/00-main.c prototypes
 // ****************************
-void wifi_init_ap(void);
+void app_main();
 #endif
