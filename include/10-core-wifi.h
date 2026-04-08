@@ -4,6 +4,5 @@
 // ****************************
 // src/10-core-wifi.c.c prototypes
 // ****************************
-void wifi_init();
-void start_web_server();
+void wifi_ap_init(void);
 #endif

@@ -1,13 +1,13 @@
 # Target labels
  bootloader
 # Source files and their labels
-/home/localuser/Documents/PlatFormIO/Projects/NoWireOS-IDF/build/CMakeFiles/bootloader
-/home/localuser/Documents/PlatFormIO/Projects/NoWireOS-IDF/build/CMakeFiles/bootloader.rule
-/home/localuser/Documents/PlatFormIO/Projects/NoWireOS-IDF/build/CMakeFiles/bootloader-complete.rule
-/home/localuser/Documents/PlatFormIO/Projects/NoWireOS-IDF/build/bootloader-prefix/src/bootloader-stamp/bootloader-build.rule
-/home/localuser/Documents/PlatFormIO/Projects/NoWireOS-IDF/build/bootloader-prefix/src/bootloader-stamp/bootloader-configure.rule
-/home/localuser/Documents/PlatFormIO/Projects/NoWireOS-IDF/build/bootloader-prefix/src/bootloader-stamp/bootloader-download.rule
-/home/localuser/Documents/PlatFormIO/Projects/NoWireOS-IDF/build/bootloader-prefix/src/bootloader-stamp/bootloader-install.rule
-/home/localuser/Documents/PlatFormIO/Projects/NoWireOS-IDF/build/bootloader-prefix/src/bootloader-stamp/bootloader-mkdir.rule
-/home/localuser/Documents/PlatFormIO/Projects/NoWireOS-IDF/build/bootloader-prefix/src/bootloader-stamp/bootloader-patch.rule
-/home/localuser/Documents/PlatFormIO/Projects/NoWireOS-IDF/build/bootloader-prefix/src/bootloader-stamp/bootloader-update.rule
+/home/localuser/Documents/PlatformIO/Projects/NoWireOS-IDF/build/CMakeFiles/bootloader
+/home/localuser/Documents/PlatformIO/Projects/NoWireOS-IDF/build/CMakeFiles/bootloader.rule
+/home/localuser/Documents/PlatformIO/Projects/NoWireOS-IDF/build/CMakeFiles/bootloader-complete.rule
+/home/localuser/Documents/PlatformIO/Projects/NoWireOS-IDF/build/bootloader-prefix/src/bootloader-stamp/bootloader-build.rule
+/home/localuser/Documents/PlatformIO/Projects/NoWireOS-IDF/build/bootloader-prefix/src/bootloader-stamp/bootloader-configure.rule
+/home/localuser/Documents/PlatformIO/Projects/NoWireOS-IDF/build/bootloader-prefix/src/bootloader-stamp/bootloader-download.rule
+/home/localuser/Documents/PlatformIO/Projects/NoWireOS-IDF/build/bootloader-prefix/src/bootloader-stamp/bootloader-install.rule
+/home/localuser/Documents/PlatformIO/Projects/NoWireOS-IDF/build/bootloader-prefix/src/bootloader-stamp/bootloader-mkdir.rule
+/home/localuser/Documents/PlatformIO/Projects/NoWireOS-IDF/build/bootloader-prefix/src/bootloader-stamp/bootloader-patch.rule
+/home/localuser/Documents/PlatformIO/Projects/NoWireOS-IDF/build/bootloader-prefix/src/bootloader-stamp/bootloader-update.rule

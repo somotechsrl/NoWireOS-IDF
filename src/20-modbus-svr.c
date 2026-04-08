@@ -6,9 +6,9 @@
 #include <unistd.h>
 #include "10-json-encoder.h"
 #include "10-core-mqtt.h"
-#include "10-modbus-cfg.h"
 #include "10-modbus-tcp.h"
 #include "10-modbus-rtu.h"  
+#include "20-modbus-svr.h"
 
 // Modbus configuration entry
 #define XTAG 32
@@ -174,9 +174,10 @@ static void modbus_client_task(void *pvParameters) {
       //ESP_LOGI(TAG,"%s",jsonGetBase64());
 
       mqtt_send_up_data(jsonGetBase64());
-      vTaskDelay(pdMS_TO_TICKS(MODBUS_TCP_RETRY_DELAY_MS));
 
-      ESP_LOGI(TAG,"%s", "Modbus client task delay terminated, restarting loop");
+      ESP_LOGI(TAG,"Modbus client task delay %lus",timestep/1000);
+      vTaskDelay(pdMS_TO_TICKS(timestep));
+      ESP_LOGI(TAG,"Modbus client task delay terminated, restarting loop");
     }
   }
 

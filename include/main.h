@@ -37,6 +37,7 @@ extern char mac_str[20];
 extern char serial_str[16];
 extern esp_chip_info_t chip_info;
 
+extern uint32_t timestep;
 extern bool led_blink_enabled;
 
 
@@ -45,7 +46,6 @@ extern TaskHandle_t modbus_client_task_handle;
 
 #define MODBUS_TCP_DEFAULT_PORT 502
 #define MODBUS_TCP_UNIT_ID 1
-#define MODBUS_TCP_RETRY_DELAY_MS 300000
 #define MODBUS_TCP_REQUEST_TIMEOUT_SEC 5
 #define MODBUS_TCP_MAX_REGISTERS 32
 #define MODBUS_NUMBER_OF_REGISTERS 16

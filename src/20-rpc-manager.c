@@ -6,7 +6,7 @@
 #include "10-core-mqtt.h"
 #include "10-json-encoder.h"
 #include "20-rpc_functs.h"
-#include "10-modbus-cfg.h"
+#include "20-modbus-svr.h"
 
 /*******************************************************************************
    RPC Parser/Executor module
@@ -15,6 +15,7 @@
 
 #define TAG "RPC"
 bool trigger = false;
+uint32_t timestep=300000;
 
 
 // retrives command sequence if for switch/case
@@ -75,12 +76,8 @@ void rpcManage(const char *payload, bool sync) {
     break;
        case CFG_Timestep:
       // timestep is received in s, converted in ms
-      //if (bitname != "") timestep = bitname.toInt()*1000;
-      //if (timestep < MINTSTEP*1000) {
-      //  debug(DEBUG_RPC,String("Timestep too low, forced to ")+MINTSTEP);
-      //  timestep = MINTSTEP*1000;
-      //}
-      //jsonAddObject_uint32_t("value", (uint32_t)timestep/1000);
+      if (*rpc_params) timestep = atoi(rpc_params)*1000;
+      jsonAddObject_uint32_t("value", (uint32_t)timestep/1000);
       break;
 
     // ************ RPC group Commands

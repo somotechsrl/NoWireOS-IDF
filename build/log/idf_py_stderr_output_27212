@@ -1,4 +1,4 @@
-Command: cmake -G Ninja -B /home/localuser/Documents/PlatFormIO/Projects/NoWireOS-IDF/build -DPYTHON_DEPS_CHECKED=1 -DPYTHON=/home/localuser/.espressif/tools/python/v6.0/venv/bin/python3 -DESP_PLATFORM=1 -DIDF_TARGET=esp32 -DCCACHE_ENABLE=False /home/localuser/Documents/PlatFormIO/Projects/NoWireOS-IDF
+Command: cmake -G Ninja -B /home/localuser/Documents/PlatformIO/Projects/NoWireOS-IDF/build -DPYTHON_DEPS_CHECKED=1 -DPYTHON=/home/localuser/.espressif/tools/python/v6.0/venv/bin/python3 -DESP_PLATFORM=1 -DIDF_TARGET=esp32s3 -DCCACHE_ENABLE=False /home/localuser/Documents/PlatformIO/Projects/NoWireOS-IDF
 Configuration Report               
  ───────────────────────────────── 
    Parser Version: 1               
