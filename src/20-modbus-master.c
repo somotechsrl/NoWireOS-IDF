@@ -131,7 +131,7 @@ static void modbus_master_task(void *pvParameters) {
           // init json block for new server, if same server as previous call, will aggregate into same block
           jsonAddObject_string("DEV",conf->tag);
           jsonAddObject_string("BUS",conf->ad);
-          jsonAddObject_string("DRV","esp-modbus");
+          jsonAddObject_string("DRV","modbus");
           jsonAddObject("data");
 
           ESP_LOGI(TAG, "Processing Modbus TCP call: tag=%s addr=%s func=%d", conf->tag, conf->ad, conf->fn);

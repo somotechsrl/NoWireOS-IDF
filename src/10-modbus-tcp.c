@@ -63,8 +63,10 @@ int modbus_tcp_disconnect(int sock) {
     return close(sock);
 }   
 
+static uint8_t modbus_error;
 static uint16_t *modbus_tcp_read(int sock, uint8_t unit_id, uint8_t func, uint16_t start_address, uint16_t quantity) {
     
+    modbus_error = 0; // reset error before call
     static uint16_t dest[MODBUS_TCP_MAX_REGISTERS];
 
     if (quantity == 0 || quantity > MODBUS_TCP_MAX_REGISTERS) {
@@ -131,14 +133,12 @@ static uint16_t *modbus_tcp_read(int sock, uint8_t unit_id, uint8_t func, uint16
         return NULL;
     }
 
-    if (pdu[0] & 0x80) {
-        ESP_LOGE(TAG, "Modbus exception response function 0x%02X code 0x%02X", pdu[0], pdu[1]);
+    if (pdu[0] & 0x80 || pdu[0] != func) {
+        modbus_error = pdu[1];
+        ESP_LOGE(TAG, "Modbus exception response function=0x%02X code=0x%02X rs=%04X rn=%d", pdu[0], pdu[1], start_address,quantity);
         return NULL;
     }
-    if (pdu[0] != 0x03) {
-        ESP_LOGE(TAG, "unexpected Modbus function code 0x%02X", pdu[0]);
-        return NULL;
-    }
+
     uint8_t byte_count = pdu[1];
     if (byte_count != quantity * 2) {
         ESP_LOGE(TAG, "unexpected byte count %u", byte_count);
@@ -176,17 +176,18 @@ uint16_t *modbus_tcp_read_json(int sock,uint8_t unit_id, uint8_t func, uint16_t 
     char jobjectid[64];
     sprintf(jobjectid,"x%04x",start_address);
 
+    // reads data from modbus tcp server, response is array of uint16_t, jsonAddValue will add as number, if want to add as string need to convert to string first
+    response=modbus_tcp_read(sock, unit_id , func, start_address, quantity);
+
     jsonAddArray(jobjectid);
     jsonAddValue_uint8_t(func);
-    jsonAddValue_uint16_t(0); // will be replaced by query result
+    jsonAddValue_uint16_t(modbus_error);
     jsonAddValue_uint16_t(start_address);
-    
-    if ((response=modbus_tcp_read(sock, unit_id , func, start_address, quantity)) != NULL) {
-    for (uint16_t i = 0; i < quantity; ++i) {
-        //ESP_LOGI(TAG, "holding register[%d] = 0x%04X", i, response[i]);
+
+    // get values for non null response, if response is null, it means there was an error, modbus_error variable will have error code, if response is not null, modbus_error should be 0
+    for (uint16_t i = 0; response && i < quantity; ++i) {
         jsonAddValue_uint16_t(response[i]);
         }
-    }
 
     jsonClose();
 

@@ -66,3 +66,29 @@ static void led_blink(void *pvParameters) {
 void led_blink_init(void) {
     xTaskCreate(led_blink, "led_blink", 4096, NULL, 5, NULL);
     }
+
+// 1. Custom function to handle logs
+static int mqtt_log_function(const char *fmt, va_list args) {
+
+    // Format the log message into a buffer
+    char log_buffer[256];
+    vsnprintf(log_buffer, sizeof(log_buffer), fmt, args);
+
+    // Send log_buffer to another destination (e.g., UART1, Socket, SPIFFS)
+    // Example: send_to_custom_destination(log_buffer);
+    mqtt_send_log(log_buffer); // Send log to MQTT topic
+
+    return 0; // Return 0 to indicate success   
+
+}
+
+// sets mqtt logger
+void set_mqtt_logger() {
+    esp_log_set_vprintf(mqtt_log_function);
+}   
+
+void unset_mqtt_logger() {
+    esp_log_set_vprintf(NULL); // Reset to default logger
+}   
+
+

@@ -41,7 +41,7 @@ extern uint32_t timestep;
 extern bool led_blink_enabled;
 
 
-extern TaskHandle_t modbus_client_task_handle;
+extern TaskHandle_t modbus_master_task_handle;
 
 
 #define MODBUS_TCP_DEFAULT_PORT 502

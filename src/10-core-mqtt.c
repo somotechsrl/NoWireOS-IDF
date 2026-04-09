@@ -10,6 +10,7 @@
 #define BOARDID "esp32"
 static char topic_up[TSIZE];
 static char topic_rpc[TSIZE];
+static char topic_log[TSIZE];
 static char topic_down[TSIZE];
 static esp_mqtt_client_handle_t client;
 
@@ -74,6 +75,16 @@ void mqtt_send_rpc_response(const char *respid) {
     esp_mqtt_client_publish(client, topic_resp, jsonGetBase64(), 0, 1, 0);
 }       
 
+void mqtt_send_log(const char *data) {
+
+    // calculates magic suffix
+    char xtopic[TSIZE*2];
+    uint16_t randseed=rand();
+    uint16_t magic=randseed ^ 0x1b2c;
+    snprintf(xtopic,TSIZE*2,"%s/%04x%04x",topic_log,randseed,magic);
+    esp_mqtt_client_publish(client, xtopic,data , 0, 1, 0);
+}       
+
 void mqtt_handle_received(const char *topic, const char *data) {
     if (strncmp(topic, topic_rpc, strlen(topic_rpc)) == 0) {
         ESP_LOGI(TAG, "Received RPC message: %s :: %s", topic,data);
@@ -93,6 +104,7 @@ void mqtt_init(void) {
     // sets topic values
     snprintf(topic_up, TSIZE, "%s/%s/%s/up",THEAD,BOARDID,serial_str);
     snprintf(topic_rpc, TSIZE, "%s/%s/%s/rpc", THEAD, BOARDID, serial_str);
+    snprintf(topic_log, TSIZE, "%s/%s/%s/log", THEAD, BOARDID, serial_str);
     snprintf(topic_down, TSIZE, "%s/%s/%s/down", THEAD,BOARDID, serial_str);
 
     static const esp_mqtt_client_config_t mqtt_cfg = {
