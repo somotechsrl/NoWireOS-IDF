@@ -2,10 +2,9 @@
 #include <string.h>
 #include "30-rpc-cmd.h"
 #include "30-rpc-ids.h"
-#include "10-json-encoder.h"
-#include "10-core-mqtt.h"
-#include "10-json-encoder.h"
-#include "20-rpc_functs.h"
+#include "10-encoder.h"
+#include "10-mqtt.h"
+#include "20-rpc-utils.h"
 #include "20-modbus-master.h"
 #include "30-utils.h"
 

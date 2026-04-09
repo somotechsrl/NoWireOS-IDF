@@ -4,8 +4,8 @@
 #include <arpa/inet.h>
 #include <sys/time.h>
 #include <unistd.h>
-#include "10-json-encoder.h"
-#include "10-core-mqtt.h"
+#include "10-encoder.h"
+#include "10-mqtt.h"
 #include "10-modbus-tcp.h"
 #include "10-modbus-rtu.h"  
 #include "20-modbus-master.h"

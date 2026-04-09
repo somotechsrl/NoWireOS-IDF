@@ -1,5 +1,5 @@
 #include "main.h"
-#include "10-json-encoder.h"
+#include "10-encoder.h"
 #include "driver/temperature_sensor.h"
 
 // Compiles data for GetInfo and Status
@@ -48,40 +48,6 @@ void sysGetInfo(void) {
     //jsonAddObject("mf",ESP.getFreeHeap());
 }
 
-#define BLINK_GPIO 2
-#define BLINK_DELAY_MS 1000
-bool led_blink_enabled = true;
-
-
-static void led_blink(void *pvParameters) {  
-    
-    // Configure the GPIO pin
-    gpio_reset_pin(BLINK_GPIO);
-    gpio_set_direction(BLINK_GPIO, GPIO_MODE_OUTPUT);
-
-    // Blink loop
-    while (true) {
-
-        // Turn LED ON
-        //printf("LED ON\n");
-        if(!led_blink_enabled) {
-            vTaskDelay(BLINK_DELAY_MS/portTICK_PERIOD_MS); // Delay 500 ms
-            continue;
-        }   
-
-        gpio_set_level(BLINK_GPIO, 1);
-        vTaskDelay((BLINK_DELAY_MS/10)/portTICK_PERIOD_MS); // Delay 500 ms
-        
-        // Turn LED OFF
-        //printf("LED OFF\n");
-        gpio_set_level(BLINK_GPIO, 0);
-        vTaskDelay(BLINK_DELAY_MS / portTICK_PERIOD_MS); // Delay 1 second
-        }
-    }
-
-void led_blink_init(void) {
-    xTaskCreate(led_blink, "led_blink", 4096, NULL, 5, NULL);
-    }
 
 // 1. Custom function to handle logs
 static int mqtt_log_function(const char *fmt, va_list args) {

@@ -1,9 +1,9 @@
 #include "main.h"
 #include "mqtt_client.h"
-#include "10-core-mqtt.h"
+#include "10-mqtt.h"
+#include "10-encoder.h"
+#include "10-watchdogs.h"
 #include "20-rpc-manager.h"
-#include "10-json-encoder.h"
-#include "20-watchdogs.h"
  
 #define TSIZE 128
 #define THEAD "nowireos"

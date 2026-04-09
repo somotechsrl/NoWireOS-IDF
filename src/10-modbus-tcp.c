@@ -4,8 +4,7 @@
 #include <arpa/inet.h>
 #include <sys/time.h>
 #include <unistd.h>
-#include "10-json-encoder.h"
-#include "10-core-mqtt.h"
+#include "10-encoder.h"
 
 #define TAG "MODBUS_TCP"
 #define ARRAY_SIZE(arr) (sizeof(arr) / sizeof((arr)[0]))

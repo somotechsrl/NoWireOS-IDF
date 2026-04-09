@@ -5,7 +5,6 @@
 // src/20-rpc-utils.c prototypes
 // ****************************
 void sysGetInfo(void);
-void led_blink_init(void);
 void logger_mqtt();
 void logger_default();
 void logger_off();

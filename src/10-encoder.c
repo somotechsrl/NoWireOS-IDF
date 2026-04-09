@@ -1,8 +1,6 @@
 #include "main.h"
-#include "10-json-encoder.h"
+#include "10-encoder.h"
 #include "mbedtls/base64.h"
-
-
 
 // Json formatting utilities
 #define TAG "JSON"
