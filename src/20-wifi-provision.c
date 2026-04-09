@@ -78,10 +78,14 @@ static httpd_uri_t uri_post = {
 };
 
 static void start_webserver(void) {
+    ESP_LOGI(TAG, "Starting WebSever for WiFi provisioning");
+
     httpd_config_t config = HTTPD_DEFAULT_CONFIG();
     if (httpd_start(&server, &config) == ESP_OK) {
         httpd_register_uri_handler(server, &uri_get);
         httpd_register_uri_handler(server, &uri_post);
+    } else {
+        ESP_LOGE(TAG, "Failed to start web server");    
     }
 }
 
@@ -113,6 +117,7 @@ static void wifi_event_handler(void* arg, esp_event_base_t event_base,
             ap_config.ap.authmode = WIFI_AUTH_OPEN;
         }
         esp_wifi_set_config(WIFI_IF_AP, &ap_config);
+        vTaskDelay(pdMS_TO_TICKS(5000)); // Short delay to ensure AP is up before starting server
         start_webserver();
     } else if (event_base == IP_EVENT && event_id == IP_EVENT_STA_GOT_IP) {
         ESP_LOGI(TAG, "Connected to WiFi!");

@@ -14,16 +14,13 @@ void app_main() {
     printf("%s\n", "Hello, NoWireOS!");
 
     //wifi_init();
-    wifi_init();
-    //wifi_init_hard();
+    //wifi_init();
+    wifi_init_hard();
 
     // network elated
     mqtt_init();
     modbus_init();
  
-    // start web_server
-    //start_web_server();
-
     // blinker
     led_blink_init();
     

@@ -131,10 +131,10 @@ static void modbus_client_task(void *pvParameters) {
           // init json block for new server, if same server as previous call, will aggregate into same block
           jsonAddObject_string("DEV",conf->tag);
           jsonAddObject_string("BUS",conf->ad);
-          jsonAddObject_string("CHN","modbus");
+          jsonAddObject_string("CHN","esp-modbus");
           jsonAddObject("data");
 
-          ESP_LOGI(TAG, "Processing Modbus TCP call: %s:%s:%d:%d:%d", conf->tag, conf->ad, conf->fn);
+          ESP_LOGI(TAG, "Processing Modbus TCP call: tag=%s addr=%s func=%d", conf->tag, conf->ad, conf->fn);
           // extract modbus call parameters from call->ad 
           if(sscanf(conf->ad, "%31[^':']:%31[^':']:%hu:%hu", server_type, server_host, &server_port, &server_unit_id) != 4) {
               ESP_LOGE(TAG, "Failed to parse Modbus TCP call address: %s", conf->ad);
