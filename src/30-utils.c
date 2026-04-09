@@ -1,5 +1,7 @@
 #include "main.h"
 #include "10-core-mqtt.h"
+#include "mbedtls/base64.h"
+
 
 // mac address array and string
 uint8_t mac[6];
@@ -72,12 +74,23 @@ void led_blink_init(void) {
 static int mqtt_log_function(const char *fmt, va_list args) {
 
     // Format the log message into a buffer
-    char log_buffer[256];
-    vsnprintf(log_buffer, sizeof(log_buffer), fmt, args);
+    char input[256];
+    vsnprintf(input, sizeof(input), fmt, args);
+    size_t input_len = strlen(input);
+
+    // Calculate required output size: ( (len + 2) / 3 ) * 4 + 1
+    size_t olen;
+    mbedtls_base64_encode(NULL, 0, &olen, (unsigned char *)input, input_len); // Get required size
+    unsigned char b64buffer[olen];
+
+    // Perform encoding
+    if (mbedtls_base64_encode(b64buffer, sizeof(b64buffer), &olen, (unsigned char *)input, input_len) == 0) {
+        printf("Encoded: %s\n", b64buffer);
+        }
 
     // Send log_buffer to another destination (e.g., UART1, Socket, SPIFFS)
     // Example: send_to_custom_destination(log_buffer);
-    mqtt_send_log(log_buffer); // Send log to MQTT topic
+    mqtt_send_log((const char*)b64buffer); // Send log to MQTT topic
 
     return 0; // Return 0 to indicate success   
 

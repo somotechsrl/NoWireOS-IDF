@@ -7,6 +7,7 @@ enum RPC_ids {
 ,CFG_LOG_Local
 ,CFG_LOG_Mqtt
 ,CFG_LOG_None
+,CFG_LOG_Off
 ,CFG_Modbus_AddCall
 ,CFG_Timestep
 ,RPC_List

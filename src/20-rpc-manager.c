@@ -9,11 +9,6 @@
 #include "20-modbus-master.h"
 #include "30-utils.h"
 
-/*******************************************************************************
-   RPC Parser/Executor module
-*/
-
-
 #define TAG "RPC"
 bool trigger = false;
 uint32_t timestep=300000;
@@ -81,15 +76,18 @@ void rpcManage(const char *payload, bool sync) {
       jsonAddObject_uint32_t("value", (uint32_t)timestep/1000);
       break;
       case CFG_LOG_Mqtt:
-        set_mqtt_logger();
+        logger_mqtt();
         jsonAddObject_string("value","MQTT Logger Enabled");
         break;
       case CFG_LOG_Local:
-        unset_mqtt_logger();
-        jsonAddObject_string("value","MQTT Logger Disabled");
+        logger_default();
+        jsonAddObject_string("value","Local Logger Enabled");
+        break;
+      case CFG_LOG_None:
+        logger_off();
+        jsonAddObject_string("value","Logging Disabled");
         break;
 
-    // ************ RPC group Commands
     case RPC_Trigger:
       if(!strcmp(rpc_params,"modbus")) {
         jsonAddObject_string("value","OK: Modbus Triggered");
