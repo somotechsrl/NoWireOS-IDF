@@ -8,7 +8,7 @@
 #include "10-core-mqtt.h"
 #include "10-modbus-tcp.h"
 #include "10-modbus-rtu.h"  
-#include "20-modbus-svr.h"
+#include "20-modbus-master.h"
 
 // Modbus configuration entry
 #define XTAG 32
@@ -30,7 +30,7 @@ typedef struct {
 
 
 #define TAG "MODBUS_CFG"
-TaskHandle_t modbus_client_task_handle;
+TaskHandle_t modbus_master_task_handle;
 
 static int amodbus_cnt;
 static char amodbus_cfg[MODBUS_CONFIGS][BUFTINY];
@@ -105,10 +105,10 @@ return &conf;
 }
 
 // Modbus client task, will loop through calls in config and execute them, then send json result to mqtt
-static void modbus_client_task(void *pvParameters) {
+static void modbus_master_task(void *pvParameters) {
 
     modbus_config *conf;
-    modbus_client_task_handle = xTaskGetCurrentTaskHandle();
+    modbus_master_task_handle = xTaskGetCurrentTaskHandle();
 
     static char server_type[32]; // rtu, tcp
     static char server_host[BUFTINY]; // serial,speed,sb,parity || server FQDN or IP
@@ -131,7 +131,7 @@ static void modbus_client_task(void *pvParameters) {
           // init json block for new server, if same server as previous call, will aggregate into same block
           jsonAddObject_string("DEV",conf->tag);
           jsonAddObject_string("BUS",conf->ad);
-          jsonAddObject_string("CHN","esp-modbus");
+          jsonAddObject_string("DRV","esp-modbus");
           jsonAddObject("data");
 
           ESP_LOGI(TAG, "Processing Modbus TCP call: tag=%s addr=%s func=%d", conf->tag, conf->ad, conf->fn);
@@ -183,5 +183,5 @@ static void modbus_client_task(void *pvParameters) {
 
 
 void modbus_init(void) {
-    xTaskCreate(modbus_client_task, "modbus_client", 4096, NULL, 5, NULL);
+    xTaskCreate(modbus_master_task, "modbus_master", 4096, NULL, 5, NULL);
 }

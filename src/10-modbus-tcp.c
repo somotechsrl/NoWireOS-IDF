@@ -6,7 +6,6 @@
 #include <unistd.h>
 #include "10-json-encoder.h"
 #include "10-core-mqtt.h"
-#include "20-modbus-svr.h"
 
 #define TAG "MODBUS_TCP"
 #define ARRAY_SIZE(arr) (sizeof(arr) / sizeof((arr)[0]))

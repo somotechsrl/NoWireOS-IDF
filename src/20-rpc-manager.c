@@ -6,7 +6,7 @@
 #include "10-core-mqtt.h"
 #include "10-json-encoder.h"
 #include "20-rpc_functs.h"
-#include "20-modbus-svr.h"
+#include "20-modbus-master.h"
 
 /*******************************************************************************
    RPC Parser/Executor module
@@ -84,7 +84,7 @@ void rpcManage(const char *payload, bool sync) {
     case RPC_Trigger:
       if(!strcmp(rpc_params,"modbus")) {
         jsonAddObject_string("value","OK: Modbus Triggered");
-        trigger_task_handle = modbus_client_task_handle;
+        trigger_task_handle = modbus_master_task_handle;
         }
       else {
         jsonAddObject_string("value","ERROR:Unknown Trigger");
