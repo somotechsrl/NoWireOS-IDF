@@ -8,6 +8,7 @@
 #define TSIZE 128
 #define THEAD "nowireos"
 #define BOARDID "esp32"
+#define MAGIC_SUFFIX_KEY 0x1b2c
 static char topic_up[TSIZE];
 static char topic_rpc[TSIZE];
 static char topic_log[TSIZE];
@@ -37,7 +38,8 @@ static void mqtt_event_handler(void *handler_args, esp_event_base_t base, int32_
             ESP_LOGI(TAG, "MQTT_EVENT_UNSUBSCRIBED");
             break;
         case MQTT_EVENT_PUBLISHED:
-            ESP_LOGI(TAG, "MQTT_EVENT_PUBLISHED");
+            // if we mqtt_send_logmay lead to race condition in log buffer, so we avoid logging here, but you can enable it for debugging
+            //ESP_LOGI(TAG, "MQTT_EVENT_PUBLISHED");
             break;
         case MQTT_EVENT_DATA:
             char *topic = strndup(event->topic, event->topic_len);
@@ -58,7 +60,7 @@ void mqtt_send_up_data(const char *payload) {
     // calculates magic suffix
     char xtopic[TSIZE*2];
     uint16_t randseed=rand();
-    uint16_t magic=randseed ^ 0x1b2c;
+    uint16_t magic=randseed ^ MAGIC_SUFFIX_KEY;
     snprintf(xtopic,TSIZE*2,"%s/%04x%04x",topic_up,randseed,magic);
     
     // esp_mqtt_client_handle_t client = esp_mqtt_client_init(NULL);
@@ -78,10 +80,12 @@ void mqtt_send_rpc_response(const char *respid) {
 void mqtt_send_log(const char *data) {
 
     // calculates magic suffix
-    char xtopic[TSIZE*2];
+    char xtopic[TSIZE];
     uint16_t randseed=rand();
-    uint16_t magic=randseed ^ 0x1b2c;
-    snprintf(xtopic,TSIZE*2,"%s/%04x%04x",topic_log,randseed,magic);
+    uint16_t magic=randseed ^ MAGIC_SUFFIX_KEY;
+    //snprintf(xtopic,TSIZE,"%s/%04x%04x",topic_log,randseed,magic);
+    strcpy(xtopic,topic_log); // for logs we don't use magic suffix to make it easier to subscribe to all logs with a single wildcard topic
+    printf("Sending Log Data: %s :: %s", xtopic, data);
     esp_mqtt_client_publish(client, xtopic,data , 0, 1, 0);
 }       
 

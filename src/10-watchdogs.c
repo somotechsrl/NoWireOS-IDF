@@ -14,7 +14,7 @@ static const char *TAG = "WATCHDOG";
 
 #define PING_HOST "8.8.8.8"
 #define MQTT_HOST "rpc.somotech.it"
-#define WATCHDOG_INTERVAL_MS 30000
+#define WATCHDOG_INTERVAL_MS 300000 // 5 minutes
 #define WATCHDOG_MAX_FAILURES 5
 
 static int mqtt_failures=0,ping_failures=0;

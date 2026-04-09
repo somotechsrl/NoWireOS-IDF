@@ -1,6 +1,7 @@
 #include "main.h"
 #include "10-encoder.h"
-#include "20-rpc-utils.h
+#include "10-mqtt.h"
+#include "20-rpc-utils.h"
 #include "mbedtls/base64.h"
 #include "driver/temperature_sensor.h"
 
@@ -66,7 +67,7 @@ static int mqtt_log_function(const char *fmt, va_list args) {
 
     // Performs encoding and checks for success
     if (mbedtls_base64_encode(b64buffer, sizeof(b64buffer), &olen, (unsigned char *)input, input_len) == 0) {
-        printf("Encoded Length: %u\n ", olen);
+        //printf("Encoded Length: %u\n ", olen);
         }
 
     // send mqtt log message as base64 to avoid issues with special chars, newlines, etc.. on mqtt transmission, will be decoded on receiver side
