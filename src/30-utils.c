@@ -1,5 +1,4 @@
 #include "main.h"
-#include "mbedtls/base64.h"
 
 
 // mac address array and string
