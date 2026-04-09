@@ -83,6 +83,7 @@ void rpcManage(const char *payload, bool sync) {
         logger_default();
         jsonAddObject_string("value","Local Logger Enabled");
         break;
+      case CFG_LOG_Off:
       case CFG_LOG_None:
         logger_off();
         jsonAddObject_string("value","Logging Disabled");

@@ -5,8 +5,4 @@
 // src/30-utils.c prototypes
 // ****************************
 void esp_init();
-void led_blink_init(void);
-void logger_mqtt();
-void logger_default();
-void logger_off();
 #endif

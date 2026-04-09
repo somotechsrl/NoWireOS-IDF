@@ -1,6 +1,6 @@
 #include "main.h"
-#include "10-core-wifi.h"
-#include "10-core-mqtt.h"
+#include "10-wifi.h"
+#include "10-mqtt.h"
 #include "20-modbus-master.h"
 #include "20-wifi-provision.h"
 #include "30-utils.h"
