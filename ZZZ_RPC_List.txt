@@ -10,6 +10,9 @@ CFG.Timestep
 RPC.List
 RPC.Trigger
 
+CFG.LOG.Mqtt
+CFG.LOG.Local
+
 Sys.GetInfo
 Sys.GetStatus
 Sys.Identify

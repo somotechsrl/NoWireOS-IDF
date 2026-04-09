@@ -60,6 +60,15 @@ void addModbusAggregatedCall(char *params) {
     return; 
     }
 
+  // check dups
+  for(int i=0;i<amodbus_cnt;i++) {
+    if(strcmp(amodbus_cfg[i],params) == 0) {
+      ESP_LOGW(TAG, "Duplicate configuration: %s",params);
+      jsonAddObject_printf("CFG_RESULT","Duplicate configuration: %s", params);
+      return;
+    }
+  }
+
   strcpy(amodbus_cfg[amodbus_cnt++],params);
   ESP_LOGW(TAG, "Added configuration: %s",params);
   jsonAddObject_printf("CFG_RESULT","Added configuration: %s", params);
