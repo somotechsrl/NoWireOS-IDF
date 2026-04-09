@@ -83,13 +83,24 @@ static int mqtt_log_function(const char *fmt, va_list args) {
 
 }
 
-// sets mqtt logger
-void set_mqtt_logger() {
+// Disable logs
+static int nolog_function(const char *fmt, va_list args) {
+    return 0; // Return 0 to indicate success   
+}
+
+// logs to mqtt standard queue 
+void logger_mqtt() {
     esp_log_set_vprintf(mqtt_log_function);
 }   
 
-void unset_mqtt_logger() {
-    esp_log_set_vprintf(NULL); // Reset to default logger
+// default logger, logs to serial console
+void logger_default() {
+    esp_log_set_vprintf(vprintf); // Reset to default logger
+}   
+
+// default logger, logs to serial console
+void logger_off() {
+    esp_log_set_vprintf(nolog_function); // Disable logging    
 }   
 
 

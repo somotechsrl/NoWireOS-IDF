@@ -12,6 +12,7 @@ RPC.Trigger
 
 CFG.LOG.Mqtt
 CFG.LOG.Local
+CFG.LOG.None
 
 Sys.GetInfo
 Sys.GetStatus

@@ -7,6 +7,7 @@
 #include "10-json-encoder.h"
 #include "20-rpc_functs.h"
 #include "20-modbus-master.h"
+#include "30-utils.h"
 
 /*******************************************************************************
    RPC Parser/Executor module
@@ -79,6 +80,14 @@ void rpcManage(const char *payload, bool sync) {
       if (*rpc_params) timestep = atoi(rpc_params)*1000;
       jsonAddObject_uint32_t("value", (uint32_t)timestep/1000);
       break;
+      case CFG_LOG_Mqtt:
+        set_mqtt_logger();
+        jsonAddObject_string("value","MQTT Logger Enabled");
+        break;
+      case CFG_LOG_Local:
+        unset_mqtt_logger();
+        jsonAddObject_string("value","MQTT Logger Disabled");
+        break;
 
     // ************ RPC group Commands
     case RPC_Trigger:

@@ -6,6 +6,7 @@
 // ****************************
 void esp_init();
 void led_blink_init(void);
-void set_mqtt_logger();
-void unset_mqtt_logger();
+void logger_mqtt();
+void logger_default();
+void logger_off();
 #endif

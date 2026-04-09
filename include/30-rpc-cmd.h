@@ -6,6 +6,7 @@ static const char *RPC_cmd[] = {
 ,"CFG.Leds.Enable"
 ,"CFG.LOG.Local"
 ,"CFG.LOG.Mqtt"
+,"CFG.LOG.None"
 ,"CFG.Modbus.AddCall"
 ,"CFG.Timestep"
 ,"RPC.List"
