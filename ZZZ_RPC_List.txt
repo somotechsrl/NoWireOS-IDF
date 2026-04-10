@@ -19,5 +19,4 @@ Sys.GetInfo
 Sys.GetStatus
 Sys.Identify
 Sys.Reboot
-Sys.Cancel.Reboot
 
