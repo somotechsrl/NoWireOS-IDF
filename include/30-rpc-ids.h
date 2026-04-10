@@ -12,9 +12,13 @@ enum RPC_ids {
 ,CFG_Timestep
 ,RPC_List
 ,RPC_Trigger
+,Sys,Cancel_Reboot
 ,Sys_GetInfo
 ,Sys_GetStatus
 ,Sys_Identify
 ,Sys_Reboot
+,Sys_Update_Cancel
+,Sys_Update_Filesystem
+,Sys_Update_Firmware
 };
 #endif

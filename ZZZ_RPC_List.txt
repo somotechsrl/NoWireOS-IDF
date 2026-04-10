@@ -19,4 +19,8 @@ Sys.GetInfo
 Sys.GetStatus
 Sys.Identify
 Sys.Reboot
+Sys,Cancel.Reboot
+Sys.Update.Firmware
+Sys.Update.Filesystem
+Sys.Update.Cancel
 
