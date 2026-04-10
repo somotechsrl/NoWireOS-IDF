@@ -67,13 +67,13 @@ static int mqtt_log_function(const char *fmt, va_list args) {
 
     // Performs encoding and checks for success
     if (mbedtls_base64_encode(b64buffer, sizeof(b64buffer), &olen, (unsigned char *)input, input_len) == 0) {
+        // send mqtt log message as base64 to avoid issues with special chars, newlines, etc.. on mqtt transmission, will be decoded on receiver side
+        mqtt_send_log((const char*)b64buffer); 
         //printf("Encoded Length: %u\n ", olen);
         }
 
-    // send mqtt log message as base64 to avoid issues with special chars, newlines, etc.. on mqtt transmission, will be decoded on receiver side
-    mqtt_send_log((const char*)b64buffer); 
 
-    return 0; // Return 0 to indicate success   
+    return 0; // Always return 0 to indicate success   
 
 }
 // Disable logs
@@ -96,5 +96,4 @@ void logger_default() {
 void logger_off() {
     esp_log_set_vprintf(nolog_function); // Disable logging    
 }   
-
 
