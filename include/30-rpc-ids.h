@@ -12,7 +12,7 @@ enum RPC_ids {
 ,CFG_Timestep
 ,RPC_List
 ,RPC_Trigger
-,Sys,Cancel_Reboot
+,Sys_Cancel_Reboot
 ,Sys_GetInfo
 ,Sys_GetStatus
 ,Sys_Identify
